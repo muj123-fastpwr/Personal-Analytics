@@ -51,6 +51,7 @@ public class Home {
 	private String[] apps;
 	private String[] wins;
 	private JTextArea acitiveWindow;
+	
 	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException {
 		
 					
@@ -64,7 +65,6 @@ public class Home {
 	
 	public Home() throws InterruptedException{
 		initializeFrame();
-
 		openWindows();
 		cn = connectDB();
 		initializeMenu();
@@ -393,7 +393,7 @@ public class Home {
 		reportPanel.add(lblDate);
 		
 		JSpinner daySpinner = new JSpinner();
-		daySpinner.setModel(new SpinnerDateModel(new Date(1479092400000L), new Date(1479092400000L), null, Calendar.DAY_OF_WEEK_IN_MONTH));
+		daySpinner.setModel(new SpinnerDateModel(new Date(1479092400000L), new Date(1479092400000L), null, Calendar.DAY_OF_YEAR));
 		daySpinner.setBounds(510, 14, 141, 20);
 		reportPanel.add(daySpinner);
 		
