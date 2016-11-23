@@ -19,19 +19,22 @@ import javax.swing.SpinnerDateModel;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Component;
-import java.awt.EventQueue;
+
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Calendar;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.Color;
 
 import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
@@ -51,47 +54,55 @@ import java.awt.Font;
 public class Home {
 
 	private JFrame frmPerAnal;
-	private Connection cn;
+	private static Connection cn;
 	private String[] apps;
 	private String[] wins;
 	private JTextArea acitiveWindow;
-	
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException {
 		
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-		Home window = new Home();
-		window.frmPerAnal.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	
-	//	activeWindow();
+					
+					Home window = new Home();
+					window.frmPerAnal.setVisible(true);
+					
+					activeWindow();
 				
 	}
 	
 	
-	public Home(){
+	public Home() throws InterruptedException{
 		initializeFrame();
+		
 		openWindows();
 		connectDB();
 		initializeMenu();
 		initializePanes();
 		
+		
 	}
 	
 	
-	public static void activeWindow() throws InterruptedException{
+	public static void activeWindow() throws InterruptedException, HeadlessException, SQLException{
 		char[] buffer = new char[100];
+		String windowTitle=null;
+		Communication com = new Communication(cn);
+		int time=0;
+		int h1,m1,s1;
+		
 		while(true){
 	        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
 	        User32.INSTANCE.GetWindowText(hwnd, buffer, 100);
+	        windowTitle = Native.toString(buffer);
 	        System.out.println("Active window title: " + Native.toString(buffer));
 	        Thread.sleep(5000);
 	        
+	        GregorianCalendar gcalendar1 = new GregorianCalendar();
+			h1 = gcalendar1.get(Calendar.HOUR);
+			m1 = gcalendar1.get(Calendar.MINUTE);
+			s1 = gcalendar1.get(Calendar.SECOND);
+			time = h1 * 3600 + m1 *60 + s1;
+	        com.updateData(windowTitle,time);
+	        gcalendar1 = null;
+	        System.gc();
 		}
 	}
 		
@@ -150,9 +161,11 @@ public class Home {
 		count=0;
 		for(int j=0;j<a.length;j++){
 			if(a[j]!=null){
-				ap[count]=a[j];
-				win[count]=w[j];
-				count++;
+				if(w[j].matches("(.*) - (.*)")){	
+					ap[count]=a[j];
+					win[count]=w[j];
+					count++;
+				}
 			}
 		}
 		apps = ap;
@@ -160,6 +173,7 @@ public class Home {
 		
 	
 	}
+	
 	
 	private void initializeFrame() {
 		frmPerAnal = new JFrame();
@@ -175,9 +189,7 @@ public class Home {
 		cn=null;
 		Connector c = new Connector();
 		cn = c.connectDataBase();
-		
-		Communication com = new Communication(cn);
-		com.updateData("www.facebook.com", 0);
+		System.out.println(cn);
 	}
 	
 	private void initializeMenu(){	
@@ -206,6 +218,14 @@ public class Home {
 		mnAction.add(mntmExport);
 		
 		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				frmPerAnal.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				System.exit(0);
+			}
+		});
 		mnAction.add(mntmExit);
 		
 		
@@ -334,7 +354,6 @@ public class Home {
 			gbc_label.gridx = 0;
 			gbc_label.gridy = i;
 			CurrentApps.add(appLabel, gbc_label);
-			
 		}
 		
 		//Current Apps end

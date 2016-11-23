@@ -22,7 +22,6 @@ public class Connector {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println("well done till here");
 			cn=DriverManager.getConnection(constr,"root","");
-			JOptionPane.showMessageDialog(null, "successfully connected to database\n");
 			}
 		
 			catch (ClassNotFoundException e) {
