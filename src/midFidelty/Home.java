@@ -21,7 +21,6 @@ import java.awt.Toolkit;
 import java.awt.Component;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Calendar;
 
 import java.io.BufferedReader;
@@ -37,15 +36,9 @@ import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.UIManager;
-
-import com.sun.jna.Native;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef.HWND;
 
 import java.awt.SystemColor;
 import java.awt.Font;
@@ -63,17 +56,17 @@ public class Home {
 					
 					Home window = new Home();
 					window.frmPerAnal.setVisible(true);
-					
-					activeWindow();
+					Window w = new Window();
+					w.focusedWindow(cn);
 				
 	}
 	
 	
 	public Home() throws InterruptedException{
 		initializeFrame();
-		
+
 		openWindows();
-		connectDB();
+		cn = connectDB();
 		initializeMenu();
 		initializePanes();
 		
@@ -81,30 +74,7 @@ public class Home {
 	}
 	
 	
-	public static void activeWindow() throws InterruptedException, HeadlessException, SQLException{
-		char[] buffer = new char[100];
-		String windowTitle=null;
-		Communication com = new Communication(cn);
-		int time=0;
-		int h1,m1,s1;
-		
-		while(true){
-	        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
-	        User32.INSTANCE.GetWindowText(hwnd, buffer, 100);
-	        windowTitle = Native.toString(buffer);
-	        System.out.println("Active window title: " + Native.toString(buffer));
-	        Thread.sleep(5000);
-	        
-	        GregorianCalendar gcalendar1 = new GregorianCalendar();
-			h1 = gcalendar1.get(Calendar.HOUR);
-			m1 = gcalendar1.get(Calendar.MINUTE);
-			s1 = gcalendar1.get(Calendar.SECOND);
-			time = h1 * 3600 + m1 *60 + s1;
-	        com.updateData(windowTitle,time);
-	        gcalendar1 = null;
-	        System.gc();
-		}
-	}
+	
 		
 		
 	private void openWindows(){
@@ -180,16 +150,14 @@ public class Home {
 		frmPerAnal.getContentPane().setBackground(SystemColor.menu);
 		frmPerAnal.setTitle("Personal Analytics");
 		frmPerAnal.setResizable(false);
-		frmPerAnal.setIconImage(Toolkit.getDefaultToolkit().getImage("person.ico"));
+		frmPerAnal.setIconImage(Toolkit.getDefaultToolkit().getImage("personal.png"));
 		frmPerAnal.setBounds(100, 100, 750, 500);
 		frmPerAnal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	private void connectDB(){
-		cn=null;
+	private Connection connectDB(){
 		Connector c = new Connector();
-		cn = c.connectDataBase();
-		System.out.println(cn);
+		return c.connectDataBase();
 	}
 	
 	private void initializeMenu(){	
@@ -359,10 +327,6 @@ public class Home {
 		//Current Apps end
 			
 		JButton button_1 = new JButton("");
-		button_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
 		button_1.setBounds(679, 5, 30, 30);
 		openWindowPanel.add(button_1);
 		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();

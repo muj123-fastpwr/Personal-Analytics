@@ -36,7 +36,7 @@ public class Communication {
 		
 	}
 	
-	public void updateData(String title,int newTime) throws HeadlessException, SQLException{
+	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
 		int oldTime=0,winId=0;
 		//String titleName=null;
 		String query="select winId from window where winName='"+title+"';";
