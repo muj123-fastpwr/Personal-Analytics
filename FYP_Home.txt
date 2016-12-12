@@ -18,7 +18,7 @@ import javax.swing.SpinnerDateModel;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Component;
-import java.awt.Dimension;
+
 import java.util.Date;
 import java.util.Calendar;
 
@@ -39,12 +39,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.UIManager;
 
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-
 import java.awt.SystemColor;
 import java.awt.Font;
-import java.awt.Canvas;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class Home {
@@ -54,6 +52,7 @@ public class Home {
 	private String[] apps;
 	private String[] wins;
 	private JTextArea acitiveWindow;
+	private JPanel CurrentApps;
 	
 	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException {
 		
@@ -143,7 +142,6 @@ public class Home {
 		}
 		apps = ap;
 		wins = win;
-		
 	
 	}
 	
@@ -162,6 +160,209 @@ public class Home {
 		Connector c = new Connector();
 		return c.connectDataBase();
 	}
+	
+	
+	
+	private void initializePanes(){
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBounds(10, 21, 724, 419);
+		frmPerAnal.getContentPane().add(tabbedPane);
+		
+		initializeHomePane(tabbedPane);
+		initializeOpenWindowPane(tabbedPane);
+		initializeReportPane(tabbedPane);
+	}
+	
+	
+	public void initializeHomePane(JTabbedPane tabbedPane){
+		JPanel homePanel = new JPanel();
+		homePanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
+		tabbedPane.addTab("Home", null, homePanel, null);
+		homePanel.setLayout(null);
+		
+		
+		JLabel homeLogo = new JLabel("");
+		homePanel.add(homeLogo);
+		Image img = new ImageIcon(this.getClass().getResource("/personal.png")).getImage();
+		homeLogo.setIcon(new ImageIcon(img));
+		homeLogo.setBounds(305, 146, 128, 128);
+		homePanel.add(homeLogo);
+		
+		
+	}
+	
+	public void initializeOpenWindowPane(JTabbedPane tabbedPane){
+		JPanel openWindowPanel = new JPanel();
+		openWindowPanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
+		
+		
+		tabbedPane.addTab("Open Windows", null, openWindowPanel, null);
+		openWindowPanel.setLayout(null);
+		
+		JSplitPane splitPane = new JSplitPane();
+		splitPane.setBounds(10, 43, 699, 335);
+		openWindowPanel.add(splitPane);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		splitPane.setRightComponent(scrollPane);
+		
+		acitiveWindow = new JTextArea();
+		acitiveWindow.setEditable(false);
+		acitiveWindow.setBackground(new Color(255, 255, 204));
+		acitiveWindow.setForeground(Color.BLACK);
+		Font myFont = new Font("Calibre", Font.BOLD, 15);
+		acitiveWindow.setFont(myFont);
+		acitiveWindow.setForeground(Color.BLUE);
+		scrollPane.setViewportView(acitiveWindow);
+		
+		CurrentApps = new JPanel();
+		CurrentApps.setBorder(UIManager.getBorder("CheckBox.border"));
+		CurrentApps.setBackground(new Color(255, 255, 204));
+		splitPane.setLeftComponent(CurrentApps);
+		GridBagLayout gbl_CurrentApps = new GridBagLayout();
+		gbl_CurrentApps.columnWidths = new int[]{89, 0};
+		gbl_CurrentApps.rowHeights = new int[]{14, 14, 14, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_CurrentApps.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_CurrentApps.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		CurrentApps.setLayout(gbl_CurrentApps);
+		
+		// Current Apps start	
+		setAppAndWindow();
+	
+		//Current Apps end
+			
+		JButton btnRefresh = new JButton("");
+		btnRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				apps = null;
+				wins = null;
+				openWindows();
+				setAppAndWindow();
+			}
+		});
+		btnRefresh.setBounds(679, 5, 30, 30);
+		openWindowPanel.add(btnRefresh);
+		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
+		btnRefresh.setIcon(new ImageIcon(img2));
+		
+		JLabel lblCurrentApp = new JLabel("Current Apps");
+		lblCurrentApp.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblCurrentApp.setBounds(10, 18, 90, 14);
+		openWindowPanel.add(lblCurrentApp);
+		
+		JLabel lblActiveWindow = new JLabel("Active Window");
+		lblActiveWindow.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblActiveWindow.setBounds(328, 18, 105, 14);
+		openWindowPanel.add(lblActiveWindow);
+		
+		
+	}
+
+	public void setAppAndWindow(){
+		for(int i=0;i<apps.length-1;i++){
+			JLabel appLabel = new JLabel(apps[i]);
+			appLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+			appLabel.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					String temp="";
+					String label = appLabel.getText();
+					for(int i=0;i<apps.length;i++){
+						if(label==apps[i]){
+							temp = wins[i]+"\n";
+						}
+					}
+					acitiveWindow.setText(temp);
+				}
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+					appLabel.setForeground(Color.GRAY);
+				}
+				@Override
+				public void mouseExited(MouseEvent e) {
+					appLabel.setForeground(Color.BLACK);
+				}
+			});
+			
+			GridBagConstraints gbc_label = new GridBagConstraints();
+			gbc_label.anchor = GridBagConstraints.WEST;
+			gbc_label.insets = new Insets(0, 0, 5, 0);
+			gbc_label.gridx = 0;
+			gbc_label.gridy = i;
+			CurrentApps.add(appLabel, gbc_label);
+		}
+	}
+	
+	
+	
+	
+	public void initializeReportPane(JTabbedPane tabbedPane){
+		JPanel reportPanel = new JPanel();
+		reportPanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
+		
+		reportPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		tabbedPane.addTab("Reports", null, reportPanel, null);
+		tabbedPane.setEnabledAt(2, true);
+		reportPanel.setLayout(null);
+		
+		
+		JTabbedPane tabbedPane2 = new JTabbedPane(JTabbedPane.LEFT);
+		tabbedPane2.setBounds(10, 45, 699, 333);
+		reportPanel.add(tabbedPane2);
+		
+		JLayeredPane PieLayeredPane = new JLayeredPane();
+		PieLayeredPane.setBackground(new Color(255, 255, 204));
+		tabbedPane2.addTab("Pie Chart", null, PieLayeredPane, null);
+		tabbedPane2.setBackgroundAt(0, new Color(255, 255, 255));
+		GridBagLayout gbl_PieLayeredPane = new GridBagLayout();
+		gbl_PieLayeredPane.columnWidths = new int[]{0};
+		gbl_PieLayeredPane.rowHeights = new int[]{0};
+		gbl_PieLayeredPane.columnWeights = new double[]{Double.MIN_VALUE};
+		gbl_PieLayeredPane.rowWeights = new double[]{Double.MIN_VALUE};
+		PieLayeredPane.setLayout(gbl_PieLayeredPane);
+		
+		JLayeredPane barLayeredPane = new JLayeredPane();
+		barLayeredPane.setBackground(new Color(255, 255, 204));
+		tabbedPane2.addTab("Bar Chart", null, barLayeredPane, null);
+		tabbedPane2.setBackgroundAt(1, new Color(255, 255, 255));
+		GridBagLayout gbl_barLayeredPane = new GridBagLayout();
+		gbl_barLayeredPane.columnWidths = new int[]{0};
+		gbl_barLayeredPane.rowHeights = new int[]{0};
+		gbl_barLayeredPane.columnWeights = new double[]{Double.MIN_VALUE};
+		gbl_barLayeredPane.rowWeights = new double[]{Double.MIN_VALUE};
+		barLayeredPane.setLayout(gbl_barLayeredPane);
+	
+		JLayeredPane layeredPane = new JLayeredPane();
+		layeredPane.setBackground(new Color(255, 255, 204));
+		tabbedPane2.addTab("Other", null, layeredPane, null);
+		tabbedPane2.setBackgroundAt(2, new Color(255, 255, 255));
+		layeredPane.setLayout(null);
+		
+		JLabel lblDate = new JLabel("Day:");
+		lblDate.setBounds(475, 17, 25, 14);
+		reportPanel.add(lblDate);
+		
+		JSpinner daySpinner = new JSpinner();
+		daySpinner.setModel(new SpinnerDateModel(new Date(1479092400000L), new Date(1479092400000L), null, Calendar.DAY_OF_YEAR));
+		daySpinner.setBounds(510, 14, 141, 20);
+		reportPanel.add(daySpinner);
+		
+		JButton button = new JButton("");
+		button.setBounds(679, 5, 30, 30);
+		reportPanel.add(button);
+		
+		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
+		button.setIcon(new ImageIcon(img2));
+	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private void initializeMenu(){	
 		JMenuBar menuBar = new JMenuBar();
@@ -231,202 +432,4 @@ public class Home {
 		frmPerAnal.getContentPane().setLayout(null);
 	}
 	
-	
-	private void initializePanes(){
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(10, 21, 724, 419);
-		frmPerAnal.getContentPane().add(tabbedPane);
-		
-		initializeHomePane(tabbedPane);
-		initializeOpenWindowPane(tabbedPane);
-		initializeReportPane(tabbedPane);
-	}
-	
-	
-	public void initializeHomePane(JTabbedPane tabbedPane){
-		JPanel homePanel = new JPanel();
-		homePanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
-		tabbedPane.addTab("Home", null, homePanel, null);
-		homePanel.setLayout(null);
-		
-		
-		JLabel homeLogo = new JLabel("");
-		homePanel.add(homeLogo);
-		Image img = new ImageIcon(this.getClass().getResource("/personal.png")).getImage();
-		homeLogo.setIcon(new ImageIcon(img));
-		homeLogo.setBounds(305, 146, 128, 128);
-		homePanel.add(homeLogo);
-		
-		
-	}
-	
-	public void initializeOpenWindowPane(JTabbedPane tabbedPane){
-		JPanel openWindowPanel = new JPanel();
-		openWindowPanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
-		
-		
-		tabbedPane.addTab("Open Windows", null, openWindowPanel, null);
-		openWindowPanel.setLayout(null);
-		
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setBounds(10, 43, 699, 335);
-		openWindowPanel.add(splitPane);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		splitPane.setRightComponent(scrollPane);
-		
-		acitiveWindow = new JTextArea();
-		acitiveWindow.setEditable(false);
-		acitiveWindow.setBackground(new Color(255, 255, 204));
-		acitiveWindow.setForeground(Color.BLACK);
-		Font myFont = new Font("Calibre", Font.BOLD, 15);
-		acitiveWindow.setFont(myFont);
-		acitiveWindow.setForeground(Color.BLUE);
-		scrollPane.setViewportView(acitiveWindow);
-		
-		JPanel CurrentApps = new JPanel();
-		CurrentApps.setBorder(UIManager.getBorder("CheckBox.border"));
-		CurrentApps.setBackground(new Color(255, 255, 204));
-		splitPane.setLeftComponent(CurrentApps);
-		GridBagLayout gbl_CurrentApps = new GridBagLayout();
-		gbl_CurrentApps.columnWidths = new int[]{89, 0};
-		gbl_CurrentApps.rowHeights = new int[]{14, 14, 14, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_CurrentApps.columnWeights = new double[]{0.0, Double.MIN_VALUE};
-		gbl_CurrentApps.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		CurrentApps.setLayout(gbl_CurrentApps);
-		
-		// Current Apps start	
-		for(int i=0;i<apps.length-1;i++){
-			JLabel appLabel = new JLabel(apps[i]);
-			appLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
-			appLabel.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent arg0) {
-					String temp="";
-					String label = appLabel.getText();
-					for(int i=0;i<apps.length;i++){
-						if(label==apps[i]){
-							temp = wins[i]+"\n";
-						}
-					}
-					acitiveWindow.setText(temp);
-				}
-				@Override
-				public void mouseEntered(MouseEvent arg0) {
-					appLabel.setForeground(Color.GRAY);
-				}
-				@Override
-				public void mouseExited(MouseEvent e) {
-					appLabel.setForeground(Color.BLACK);
-				}
-			});
-			
-			GridBagConstraints gbc_label = new GridBagConstraints();
-			gbc_label.anchor = GridBagConstraints.WEST;
-			gbc_label.insets = new Insets(0, 0, 5, 0);
-			gbc_label.gridx = 0;
-			gbc_label.gridy = i;
-			CurrentApps.add(appLabel, gbc_label);
-		}
-		
-		//Current Apps end
-			
-		JButton button_1 = new JButton("");
-		button_1.setBounds(679, 5, 30, 30);
-		openWindowPanel.add(button_1);
-		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
-		button_1.setIcon(new ImageIcon(img2));
-		
-		JLabel lblCurrentApp = new JLabel("Current Apps");
-		lblCurrentApp.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblCurrentApp.setBounds(10, 18, 90, 14);
-		openWindowPanel.add(lblCurrentApp);
-		
-		JLabel lblActiveWindow = new JLabel("Active Window");
-		lblActiveWindow.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblActiveWindow.setBounds(328, 18, 105, 14);
-		openWindowPanel.add(lblActiveWindow);
-		
-		
-	}
-
-	
-	public void initializeReportPane(JTabbedPane tabbedPane){
-		JPanel reportPanel = new JPanel();
-		reportPanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
-		
-		reportPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		tabbedPane.addTab("Reports", null, reportPanel, null);
-		tabbedPane.setEnabledAt(2, true);
-		reportPanel.setLayout(null);
-		
-		
-		JTabbedPane tabbedPane2 = new JTabbedPane(JTabbedPane.LEFT);
-		tabbedPane2.setBounds(10, 45, 699, 333);
-		reportPanel.add(tabbedPane2);
-		
-		JLayeredPane PieLayeredPane = new JLayeredPane();
-		PieLayeredPane.setBackground(new Color(255, 255, 204));
-		tabbedPane2.addTab("Pie Chart", null, PieLayeredPane, null);
-		PieLayeredPane.setLayout(null);
-		tabbedPane2.setBackgroundAt(0, new Color(255, 255, 255));
-		
-		JPanel piePanel = new JPanel();
-		piePanel.setBounds(10, 11, 612, 306);
-		PieLayeredPane.add(piePanel);
-		
-		ResultView resView = new ResultView();
-		JFreeChart pieChart = resView.generatePieChart();
-		ChartPanel chPanel = new ChartPanel(pieChart);
-        chPanel.setPreferredSize(new Dimension(600, 300));
-        piePanel.add(chPanel);
-        
-		
-		JLayeredPane barLayeredPane = new JLayeredPane();
-		barLayeredPane.setBackground(new Color(255, 255, 204));
-		barLayeredPane.setLayout(null);
-		tabbedPane2.addTab("Bar Chart", null, barLayeredPane, null);
-		tabbedPane2.setBackgroundAt(1, new Color(255, 255, 255));
-		
-		JPanel barPanel = new JPanel();
-		barPanel.setBounds(10, 11, 612, 306);
-		barLayeredPane.add(barPanel);
-
-		resView = new ResultView();
-		JFreeChart barChart = resView.generateBarChart();
-		chPanel = new ChartPanel(barChart);
-        chPanel.setPreferredSize(new Dimension(600, 300));
-        barPanel.add(chPanel);
-		
-		
-        
-        
-		
-		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setBackground(new Color(255, 255, 204));
-		tabbedPane2.addTab("Other", null, layeredPane, null);
-		tabbedPane2.setBackgroundAt(2, new Color(255, 255, 255));
-		layeredPane.setLayout(null);
-		
-		Canvas canvas = new Canvas();
-		canvas.setBounds(10, 10, 612, 308);
-		layeredPane.add(canvas);
-		
-		JLabel lblDate = new JLabel("Day:");
-		lblDate.setBounds(475, 17, 25, 14);
-		reportPanel.add(lblDate);
-		
-		JSpinner daySpinner = new JSpinner();
-		daySpinner.setModel(new SpinnerDateModel(new Date(1479092400000L), new Date(1479092400000L), null, Calendar.DAY_OF_YEAR));
-		daySpinner.setBounds(510, 14, 141, 20);
-		reportPanel.add(daySpinner);
-		
-		JButton button = new JButton("");
-		button.setBounds(679, 5, 30, 30);
-		reportPanel.add(button);
-		
-		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
-		button.setIcon(new ImageIcon(img2));
-	
-	}
 }
