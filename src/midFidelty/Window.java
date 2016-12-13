@@ -1,17 +1,134 @@
 package midFidelty;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.HeadlessException;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 public class Window {
+	private String[] apps;
+	private String[] wins;
 	
+	
+	
+	public void openWindows(){
+
+		String[] a = new String[100];
+		String[] w = new String[100];
+		
+		try {
+			String process;
+			
+			int i=0;
+			Process p = Runtime.getRuntime().exec("tasklist /v /fo csv /nh");
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			System.out.println(input.read());// total number of lines
+			while ((process = input.readLine()) != null) {
+				process = process.replaceAll("\"", "");
+				String[]str = process.split(",");
+				if(str.length == 11){
+					if(!str[10].equals("N/A")){
+						System.out.println(str[0]+"__"+str[10]);
+						a[i] = str[0];
+						w[i] = str[10];
+					}	
+				}
+				else if(str.length == 10){
+					if(!str[9].equals("N/A")){
+						System.out.println(str[0]+"__"+str[9]);
+						a[i] = str[0];
+						w[i] = str[9];
+					}	
+				}
+				else if(str.length==9){
+					if(!str[8].equals("N/A")){
+						System.out.println(str[0]+"__"+str[8]);
+						a[i] = str[0];
+						w[i] = str[8];
+					}
+				}
+					i++;				
+			}
+			input.close();
+			
+		} catch (Exception err) {
+			err.printStackTrace();
+		}
+		int count=0;
+		for(int j=0;j<a.length;j++){
+			if(a[j]!=null){
+				count++;
+			}
+		}
+		String[]ap = new String[count];
+		String[]win = new String[count];
+		count=0;
+		for(int j=0;j<a.length;j++){
+			if(a[j]!=null){
+				if(w[j].matches("(.*) - (.*)")){	
+					ap[count]=a[j];
+					win[count]=w[j];
+					count++;
+				}
+			}
+		}
+		apps = ap;
+		wins = win;
+	}
+
+	public void currentApps(JTextArea activeWindow, JPanel CurrentApps){
+		for(int i=0;i<apps.length-1;i++){
+			JLabel appLabel = new JLabel(apps[i]);
+			appLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+			appLabel.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					String temp="";
+					String label = appLabel.getText();
+					for(int i=0;i<apps.length;i++){
+						if(label==apps[i]){
+							temp = wins[i]+"\n";
+							break;
+						}
+					}
+					activeWindow.setText(temp);
+				}
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+					appLabel.setForeground(Color.GRAY);
+				}
+				@Override
+				public void mouseExited(MouseEvent e) {
+					appLabel.setForeground(Color.BLACK);
+				}
+			});
+			
+			GridBagConstraints gbc_label = new GridBagConstraints();
+			gbc_label.anchor = GridBagConstraints.WEST;
+			gbc_label.insets = new Insets(0, 0, 5, 0);
+			gbc_label.gridx = 0;
+			gbc_label.gridy = i;
+			CurrentApps.add(appLabel, gbc_label);
+		}
+		
+	}
 	
 	
 	public void focusedWindow(Connection cn) throws InterruptedException, HeadlessException, SQLException{
