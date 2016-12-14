@@ -41,13 +41,15 @@ import org.jfree.chart.JFreeChart;
 import java.awt.SystemColor;
 import java.awt.Font;
 import java.awt.Canvas;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 
 public class Home {
 
 	private JFrame frmPerAnal;
 	private static Connection cn;
-	//private Window w;
+	private Window w;
 	private JTextArea activeWindow;
 	
 	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException {
@@ -63,11 +65,11 @@ public class Home {
 	
 	public Home() throws InterruptedException{
 		initializeFrame();
-		Window w= new Window();
+		w= new Window();
 		w.openWindows();
 		cn = connectDB();
 		initializeMenu();
-		initializePanes(w);
+		initializePanes();
 		
 	}
 	
@@ -161,13 +163,13 @@ public class Home {
 	}
 	
 	
-	private void initializePanes(Window w){
+	private void initializePanes(){
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(10, 21, 724, 419);
 		frmPerAnal.getContentPane().add(tabbedPane);
 		
 		initializeHomePane(tabbedPane);
-		initializeOpenWindowPane(tabbedPane, w);
+		initializeOpenWindowPane(tabbedPane);
 		initializeReportPane(tabbedPane);
 	}
 	
@@ -189,7 +191,7 @@ public class Home {
 		
 	}
 	
-	public void initializeOpenWindowPane(JTabbedPane tabbedPane, Window w){
+	public void initializeOpenWindowPane(JTabbedPane tabbedPane){
 		JPanel openWindowPanel = new JPanel();
 		openWindowPanel.setBackground(UIManager.getColor("InternalFrame.activeTitleGradient"));
 		
@@ -226,15 +228,25 @@ public class Home {
 		
 		// Current Apps start
 		
-		w.currentApps(activeWindow, CurrentApps);
+		w.currentApps(activeWindow, CurrentApps, gbl_CurrentApps);
 		
-		//Current Apps end
+		
 			
-		JButton button_1 = new JButton("");
-		button_1.setBounds(679, 5, 30, 30);
-		openWindowPanel.add(button_1);
+		JButton winRefresh = new JButton("");
+		winRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				w.openWindows();
+				w.currentApps(activeWindow, CurrentApps, gbl_CurrentApps);
+				
+			}
+		});
+		//Current Apps end
+		winRefresh.setBounds(679, 5, 30, 30);
+		openWindowPanel.add(winRefresh);
+		
+		
 		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
-		button_1.setIcon(new ImageIcon(img2));
+		winRefresh.setIcon(new ImageIcon(img2));
 		
 		JLabel lblCurrentApp = new JLabel("Current Apps");
 		lblCurrentApp.setFont(new Font("Tahoma", Font.BOLD, 12));
