@@ -35,6 +35,7 @@ public class Communication {
 		date = ft.format(date2);
 		
 	}
+
 	
 	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
 		int oldTime=0,winId=0;

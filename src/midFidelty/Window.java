@@ -1,6 +1,7 @@
 package midFidelty;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -26,9 +27,10 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 public class Window {
 	private String[] apps;
 	private String[] wins;
-	private int appLength;
 	private GridBagConstraints gbc_label;
 
+	
+	
 	public void openWindows(){
 		apps = null;
 		wins = null;
@@ -77,9 +79,6 @@ public class Window {
 		for(int j=0;j<a.length;j++){
 			if(a[j]!=null){
 				count++;
-			//	if(w[j].matches("(.*) - (.*)")){	
-			//		count++;
-			//	}
 			}
 		}
 		String[]ap = new String[count];
@@ -97,9 +96,10 @@ public class Window {
 		
 		apps = ap;
 		wins = win;
-		appLength = apps.length;
 	}
 
+	
+	
 	public void currentApps(JTextArea activeWindow, JPanel CurrentApps, GridBagLayout gbl_CurrentApps){
 		CurrentApps.removeAll();
 		gbl_CurrentApps.columnWidths = new int[]{89, 0};
@@ -131,6 +131,7 @@ public class Window {
 				@Override
 				public void mouseEntered(MouseEvent arg0) {
 					appLabel.setForeground(Color.GRAY);
+					appLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				}
 				@Override
 				public void mouseExited(MouseEvent e) {
@@ -148,6 +149,8 @@ public class Window {
 		
 		
 	}
+	
+	
 	
 	
 	public void focusedWindow(Connection cn) throws InterruptedException, HeadlessException, SQLException{
@@ -174,7 +177,6 @@ public class Window {
 	        System.gc();
 		}
 	}
-	
 	
 	
 

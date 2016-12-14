@@ -18,6 +18,7 @@ import javax.swing.SpinnerDateModel;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.util.Date;
 import java.util.Calendar;
@@ -74,9 +75,6 @@ public class Home {
 	}
 	
 	
-	
-		
-		
 		
 	
 	private void initializeFrame() {
@@ -89,10 +87,14 @@ public class Home {
 		frmPerAnal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	
+	
 	private Connection connectDB(){
 		Connector c = new Connector();
 		return c.connectDataBase();
 	}
+	
+	
 	
 	private void initializeMenu(){	
 		JMenuBar menuBar = new JMenuBar();
@@ -163,6 +165,7 @@ public class Home {
 	}
 	
 	
+	
 	private void initializePanes(){
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(10, 21, 724, 419);
@@ -172,6 +175,7 @@ public class Home {
 		initializeOpenWindowPane(tabbedPane);
 		initializeReportPane(tabbedPane);
 	}
+	
 	
 	
 	public void initializeHomePane(JTabbedPane tabbedPane){
@@ -190,6 +194,8 @@ public class Home {
 		
 		
 	}
+	
+	
 	
 	public void initializeOpenWindowPane(JTabbedPane tabbedPane){
 		JPanel openWindowPanel = new JPanel();
@@ -233,6 +239,12 @@ public class Home {
 		
 			
 		JButton winRefresh = new JButton("");
+		winRefresh.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				winRefresh.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			}
+		});
 		winRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				w.openWindows();
@@ -261,6 +273,8 @@ public class Home {
 		
 	}
 
+	
+	
 	
 	public void initializeReportPane(JTabbedPane tabbedPane){
 		JPanel reportPanel = new JPanel();
@@ -312,8 +326,7 @@ public class Home {
         barPanel.add(chPanel);
 		
 		//************ Display Chart End *****************
-        
-        
+            
 		
 		JLayeredPane layeredPane = new JLayeredPane();
 		layeredPane.setBackground(new Color(255, 255, 204));
@@ -340,6 +353,6 @@ public class Home {
 		
 		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
 		button.setIcon(new ImageIcon(img2));
-	
 	}
+	
 }
