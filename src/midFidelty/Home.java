@@ -186,7 +186,6 @@ public class Home {
 		
 		
 		JLabel homeLogo = new JLabel("");
-		homePanel.add(homeLogo);
 		Image img = new ImageIcon(this.getClass().getResource("/personal.png")).getImage();
 		homeLogo.setIcon(new ImageIcon(img));
 		homeLogo.setBounds(305, 146, 128, 128);
@@ -299,13 +298,13 @@ public class Home {
 		
 		// ********** Display Chart Start*************
 		JPanel piePanel = new JPanel();
-		piePanel.setBounds(10, 11, 612, 306);
+		piePanel.setBounds(0, 0, 632, 328);
 		PieLayeredPane.add(piePanel);
 		
 		ResultView resView = new ResultView();
 		JFreeChart pieChart = resView.generatePieChart();
 		ChartPanel chPanel = new ChartPanel(pieChart);
-        chPanel.setPreferredSize(new Dimension(600, 300));
+        chPanel.setPreferredSize(new Dimension(610, 315));
         piePanel.add(chPanel);
         
 		
@@ -316,13 +315,13 @@ public class Home {
 		tabbedPane2.setBackgroundAt(1, new Color(255, 255, 255));
 		
 		JPanel barPanel = new JPanel();
-		barPanel.setBounds(10, 11, 612, 306);
+		barPanel.setBounds(0, 0, 632, 328);
 		barLayeredPane.add(barPanel);
 
 		resView = new ResultView();
 		JFreeChart barChart = resView.generateBarChart();
 		chPanel = new ChartPanel(barChart);
-        chPanel.setPreferredSize(new Dimension(600, 300));
+        chPanel.setPreferredSize(new Dimension(615, 315));
         barPanel.add(chPanel);
 		
 		//************ Display Chart End *****************

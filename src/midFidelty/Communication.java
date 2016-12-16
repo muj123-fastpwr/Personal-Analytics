@@ -1,5 +1,5 @@
 package midFidelty;
-
+import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import java.awt.HeadlessException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,27 +38,37 @@ public class Communication {
 
 	
 	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
-		int oldTime=0,winId=0;
+		int oldTime=0,winId=0, id = 0;
+		double match1 = 0.0, match2 = 0.0;
 		//String titleName=null;
-		String query="select winId from window where winName='"+title+"';";
+		String query="select winId, winName from window;";
 		boolean titleExists = false;
 		try {
 			st=cn.createStatement();
 			rs=st.executeQuery(query);
 			while(rs.next()){
-			//	titleName = rs.getString(2);
-				winId = Integer.parseInt(rs.getString(1));
-				titleExists = true;
+				if((match1 = compareStrings(rs.getString(2),title)) >= 0.70){
+					winId = Integer.parseInt(rs.getString(1));
+					
+					if(match1 >= match2){
+						match2 = match1;
+						id = winId;
+					}
+					else{
+						winId = id;
+					}
+					titleExists = true;
+				}
 			}
+			
 		} catch (SQLException e) {
 		 	// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "Unable to retrieve from database\n"+e);
 		}
 			
-		int id=0;
 		if(!titleExists){
 			
-			query = "select count(winId) from window;";
+			query = "select max(winId) from window;";
 			try{
 				
 				st=cn.createStatement();
@@ -66,7 +76,7 @@ public class Communication {
 				while(rs.next()){
 					id = Integer.parseInt(rs.getString(1))+1;
 				}
-				query = "insert into window values("+id+",'"+title+"');"; //auto-increment for pk, fk doesn't work
+				query = "insert into window values("+id+",'"+title+"',"+0+");"; //auto-increment for pk, fk doesn't work
 				ps = cn.prepareStatement(query);
 				ps.executeUpdate();
 			}
@@ -122,6 +132,11 @@ public class Communication {
 		time = newTime;
 	}
 	
+	
+	public double compareStrings(String stringA, String stringB) {
+	    JaroWinkler algorithm = new JaroWinkler();
+	    return algorithm.getSimilarity(stringA, stringB);
+	}
 	
 }
 
