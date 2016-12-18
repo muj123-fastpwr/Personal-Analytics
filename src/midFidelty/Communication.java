@@ -38,6 +38,11 @@ public class Communication {
 
 	
 	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
+
+		if(title == "" || title.equals("") || title == null || title.equals(null)){
+			return;
+		}
+		
 		int oldTime=0,winId=0, id = 0;
 		double match1 = 0.0, match2 = 0.0;
 		//String titleName=null;

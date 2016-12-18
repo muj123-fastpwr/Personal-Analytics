@@ -172,7 +172,7 @@ public class Window {
 			m1 = gcalendar1.get(Calendar.MINUTE);
 			s1 = gcalendar1.get(Calendar.SECOND);
 			time = h1 * 3600 + m1 *60 + s1;
-	        com.autoUpdate(windowTitle,time);
+	        com.autoUpdate(windowTitle=windowTitle.trim(),time);
 	        gcalendar1 = null;
 	        System.gc();
 		}
