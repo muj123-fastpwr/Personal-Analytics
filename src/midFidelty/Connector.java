@@ -20,7 +20,6 @@ public class Connector {
 		try {
 			
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("well done till here");
 			cn=DriverManager.getConnection(constr,"root","");
 			}
 		

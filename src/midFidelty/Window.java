@@ -43,7 +43,7 @@ public class Window {
 			int i=0;
 			Process p = Runtime.getRuntime().exec("tasklist /v /fo csv /nh");
 			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			System.out.println(input.read());// total number of lines
+		//	System.out.println(input.read());// total number of lines
 			while ((process = input.readLine()) != null) {
 				process = process.replaceAll("\"", "");
 				String[]str = process.split(",");
@@ -164,7 +164,6 @@ public class Window {
 	        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
 	        User32.INSTANCE.GetWindowText(hwnd, buffer, 100);
 	        windowTitle = Native.toString(buffer);
-	        System.out.println("Active window title: " + Native.toString(buffer));
 	        Thread.sleep(5000);
 	        
 	        GregorianCalendar gcalendar1 = new GregorianCalendar();
