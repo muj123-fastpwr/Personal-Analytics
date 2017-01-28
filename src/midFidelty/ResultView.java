@@ -37,7 +37,7 @@ public class ResultView {
 		
 
 		JFreeChart chart = ChartFactory.createBarChart(
-				"Activity Time", "Today", "Time in hours",
+				"Activity Time", "Activity Nature", "Time in hours",
 				dataSet, PlotOrientation.VERTICAL, false, true, true);
 
 		return chart;
