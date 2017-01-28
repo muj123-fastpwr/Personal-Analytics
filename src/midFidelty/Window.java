@@ -10,7 +10,10 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -19,6 +22,11 @@ import java.util.GregorianCalendar;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
@@ -177,5 +185,58 @@ public class Window {
 		}
 	}
 	
+	
+	public void contentExtractionFromWebPage(){
+		
+        try {
+			URL url = new URL("http://web.cs.iastate.edu/~prabhu/Tutorial/title.html"); 
+			Document doc = Jsoup.parse(url, 3*1000);
+			
+			Elements paragraphs = doc.select("p"); 
+			Element firstParagraph = paragraphs.first();
+           
+            Element p;
+            int i=0;
+            p=firstParagraph;
+            
+            while (i<=3){
+                p=paragraphs.get(i);
+                System.out.println("PARAGRAPH "+i+" : " +p.text());
+                i++;
+                
+            } 
+            
+            Elements heading = doc.select("h1");
+            Element firstHeading = heading.first();
+            Element h;
+            i=0;
+            h=firstHeading;
+            while (i<1){
+                h=heading.get(i);     
+                System.out.println("HEADING "+i+" : "+h.text());
+                i++;
+                
+            } 
+           
+            
+                
+			String title = doc.title();
+			String content = doc.text();	// full webPage text content
+			String urlLink = doc.baseUri();	//	current webPage URL
+			String Html = doc.html();		// complete html form of webPage
+			String pageTitle = doc.title();	// web Page title
+			String alsoContent = doc.body().text(); // full webPage text content
+			String alsoLink = doc.location();
+			
+			System.out.println("JSOUP : "+alsoContent);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 	
 }
