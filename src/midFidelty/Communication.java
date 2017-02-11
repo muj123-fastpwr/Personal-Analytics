@@ -97,6 +97,10 @@ public class Communication {
 			catch(Exception e){
 				JOptionPane.showMessageDialog(null, "Unable to insert into dateAndTime Table\n"+e);
 			}
+			
+			// extract extension
+			
+			
 		}
 		
 		else if(titleExists){

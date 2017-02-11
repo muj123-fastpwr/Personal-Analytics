@@ -180,6 +180,7 @@ public class Window {
 			s1 = gcalendar1.get(Calendar.SECOND);
 			time = h1 * 3600 + m1 *60 + s1;
 	        com.autoUpdate(windowTitle=windowTitle.trim(),time);
+	        
 	        gcalendar1 = null;
 	        System.gc();
 		}
@@ -189,18 +190,28 @@ public class Window {
 	public void contentExtractionFromWebPage(){
 		
         try {
-			URL url = new URL("http://web.cs.iastate.edu/~prabhu/Tutorial/title.html"); 
-			Document doc = Jsoup.parse(url, 3*1000);
+			URL url = new URL("http://www.javatpoint.com/jsoup-example-print-meta-data-of-an-url"); 
+			Document doc = Jsoup.parse(url, 5*1000);
+			
+			
+			for(Element meta : doc.select("meta[name=keywords]")) {
+			//    System.out.println("Name: " + meta.attr("name") + " - Content: " + meta.attr("content"));
+			    System.out.println("Content: " + meta.attr("content"));
+			}
+			
 			
 			Elements paragraphs = doc.select("p"); 
 			Element firstParagraph = paragraphs.first();
-           
+			Element lastParagraph = paragraphs.last();
             Element p;
             int i=0;
             p=firstParagraph;
-            
-            while (i<=3){
+            String para="";
+            while (p!=lastParagraph){
+            	if(i==5)
+            		break;
                 p=paragraphs.get(i);
+                para += p.text();
                 System.out.println("PARAGRAPH "+i+" : " +p.text());
                 i++;
                 
@@ -208,11 +219,14 @@ public class Window {
             
             Elements heading = doc.select("h1");
             Element firstHeading = heading.first();
+            Element lastHeading = heading.last();
             Element h;
             i=0;
             h=firstHeading;
-            while (i<1){
-                h=heading.get(i);     
+            String head = "";
+            while (h!=lastHeading){
+                h=heading.get(i);
+                head += h.text();
                 System.out.println("HEADING "+i+" : "+h.text());
                 i++;
                 
