@@ -10,6 +10,9 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -23,11 +26,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import org.apache.poi.POIXMLTextExtractor;
+import org.apache.poi.POIXMLProperties.ExtendedProperties;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.asprise.util.pdf.PDFReader;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
@@ -36,7 +44,7 @@ public class Window {
 	private String[] apps;
 	private String[] wins;
 	private GridBagConstraints gbc_label;
-
+	private PreProcessing pre = new PreProcessing();
 	
 	
 	public void openWindows(){
@@ -162,14 +170,15 @@ public class Window {
 	
 	
 	public void focusedWindow(Connection cn) throws InterruptedException, HeadlessException, SQLException{
-		char[] buffer = new char[100];
-		String windowTitle=null;
-		Communication com = new Communication(cn);
+		char[] buffer = new char[200];
+		String windowTitle="";
+		String text = "";
 		int time=0;
 		int h1,m1,s1;
-		
+		Communication com = new Communication(cn);
 		while(true){
 	        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
+	       
 	        User32.INSTANCE.GetWindowText(hwnd, buffer, 100);
 	        windowTitle = Native.toString(buffer);
 	        Thread.sleep(5000);
@@ -179,6 +188,25 @@ public class Window {
 			m1 = gcalendar1.get(Calendar.MINUTE);
 			s1 = gcalendar1.get(Calendar.SECOND);
 			time = h1 * 3600 + m1 *60 + s1;
+			
+			
+			if(windowTitle.matches("(.*).pdf(.*)")){
+				String wnd="";
+				System.out.println("before pdf reading");
+				text = contentExtractionFromPdf( wnd =(windowTitle.replace(" - Foxit Reader", "")) );
+				System.out.println("After pdf reading");
+			}
+			
+			else if(windowTitle.matches("(.*).docx(.*)")){
+				
+				text = contentExtractionFromDocx( windowTitle.replace(" - Microsoft Word", "") );
+			}
+			
+			else if(windowTitle.endsWith(" - Google Chrome") || windowTitle.endsWith(" - Mozilla Firefox")){
+				contentExtractionFromWebPage(windowTitle);
+			}
+			
+			
 	        com.autoUpdate(windowTitle=windowTitle.trim(),time);
 	        
 	        gcalendar1 = null;
@@ -187,7 +215,77 @@ public class Window {
 	}
 	
 	
-	public void contentExtractionFromWebPage(){
+	public String contentExtractionFromPdf(String fileName){
+		String [] bagOfWords = null;
+		String text = "";
+		 try {
+			 	
+			 	File file = new File(fileName);
+				String path = file.getAbsolutePath();
+				PDFReader reader = new PDFReader(new File(path));
+				reader.open(); // open the file. 
+				int pages = reader.getNumberOfPages();
+				for(int i=0; i < 1; i++) {
+				   text =text +" "+ reader.extractTextFromPage(i);
+				  
+				}
+				
+				bagOfWords = pre.clean(text);
+				bagOfWords = pre.removeStopWords(bagOfWords);
+				text = pre.stem(bagOfWords);
+				 System.out.println(text);
+				// perform other operations on pages.
+				reader.close();
+				
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 return text;
+	}
+	
+	
+	public String contentExtractionFromDocx(String fileName){
+		String text="";
+		String [] bagOfWords = null;
+		fileName = fileName.trim();
+		System.out.println(fileName);
+		File file = new File(fileName);
+		String path = file.getAbsolutePath();
+		System.out.println(path);
+		 try {
+				XWPFDocument docx = new XWPFDocument(new FileInputStream(path));
+				//using XWPFWordExtractor Class
+				XWPFWordExtractor we = new XWPFWordExtractor(docx);
+				text = we.getText();
+				//System.out.println(we.getText());
+				bagOfWords = pre.clean(text);
+				bagOfWords = pre.removeStopWords(bagOfWords);
+				text = pre.stem(bagOfWords);
+				
+				
+				
+				POIXMLTextExtractor txt = we.getMetadataTextExtractor();
+				System.out.println("IMPORTANT : "+txt.getText());
+				ExtendedProperties cpro = we.getExtendedProperties();
+				System.out.println("MORE IMPORTANT : "+cpro.getApplication());
+				we.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 return text;
+	}
+	
+	
+	
+	public void contentExtractionFromWebPage(String URL){
 		
         try {
 			URL url = new URL("http://www.javatpoint.com/jsoup-example-print-meta-data-of-an-url"); 
@@ -242,7 +340,7 @@ public class Window {
 			String alsoContent = doc.body().text(); // full webPage text content
 			String alsoLink = doc.location();
 			
-			System.out.println("JSOUP : "+alsoContent);
+		//	System.out.println("JSOUP : "+alsoContent);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

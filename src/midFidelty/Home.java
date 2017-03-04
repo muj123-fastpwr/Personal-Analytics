@@ -72,7 +72,7 @@ public class Home {
 		initializeMenu();
 		initializePanes();
 		
-		w.contentExtractionFromWebPage();
+	//	w.contentExtractionFromWebPage();
 	}
 	
 	

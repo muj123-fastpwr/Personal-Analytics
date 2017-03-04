@@ -108,14 +108,40 @@ public class Communication {
 			try{
 				st=cn.createStatement();
 				rs=st.executeQuery(query);
-				while(rs.next()){
-					oldTime = Integer.parseInt(rs.getString(1));
+				
+				if(!rs.next()){
+					
+					query = "insert into dateAndTime values("+winId+",'"+date+"',"+(newTime-time)+")";
+					try{
+						ps = cn.prepareStatement(query);
+						ps.executeUpdate();
+						System.out.println("new entry executed");
+					}
+					catch (Exception e) {
+						JOptionPane.showMessageDialog(null, "Unable to update time for new day\n"+e);
+					}
+					
+				}
+				
+				else{
+				//	while(rs.next()){
+						oldTime = Integer.parseInt(rs.getString(1));
+						System.out.println("old entry executed : time = "+ oldTime);
+				//	}
+					query = "update dateAndTime set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";
+					try{
+						ps = cn.prepareStatement(query);
+						ps.executeUpdate();
+					}
+					catch (Exception e) {
+						JOptionPane.showMessageDialog(null, "Unable to update time\n"+e);
+					}
 				}
 			}
 			catch(Exception e){
 				JOptionPane.showMessageDialog(null, "Unable to retrieve from dateAndTime\n"+e);
 			}
-			if(oldTime!=0){
+/*			if(oldTime!=0){
 				query = "update dateAndTime set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";
 				try{
 					ps = cn.prepareStatement(query);
@@ -134,9 +160,10 @@ public class Communication {
 				catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Unable to update time for new day\n"+e);
 				}
+		*/		
 			}
 			
-		}
+		
 		
 		time = newTime;
 	}
