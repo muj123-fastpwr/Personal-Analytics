@@ -150,6 +150,7 @@ himself
 his
 how
 however
+I
 if
 important
 in
@@ -247,7 +248,9 @@ orders
 other
 others
 our
+ours
 out
+outside
 over
 part
 parted
@@ -310,9 +313,10 @@ somebody
 someone
 something
 somewhere
+somehow
+somewhat
 state
 states
-still
 still
 such
 sure
@@ -395,6 +399,7 @@ works
 would
 year
 years
+yes
 yet
 you
 young

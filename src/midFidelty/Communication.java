@@ -126,7 +126,7 @@ public class Communication {
 				else{
 				//	while(rs.next()){
 						oldTime = Integer.parseInt(rs.getString(1));
-						System.out.println("old entry executed : time = "+ oldTime);
+						
 				//	}
 					query = "update dateAndTime set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";
 					try{

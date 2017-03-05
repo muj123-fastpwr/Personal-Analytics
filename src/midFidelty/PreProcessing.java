@@ -12,18 +12,20 @@ public class PreProcessing {
 	
 	
 	public String[] clean(String text){
+		text = text.replace("\n", "");
 		String []token = text.split(" ");
 		for(int i=0;i<token.length;i++){
 			token[i]=token[i].trim().replaceAll("\\s+", "");
 			
-	//		token[i] = token[i].trim();
 			token[i] = token[i].replace(".", "");
 			token[i] = token[i].replace(":", "");
 			token[i] = token[i].replace("(", "");
 			token[i] = token[i].replace(")", "");
 			token[i] = token[i].replace("\"", "");
 			token[i] = token[i].replace("/", "");
-			token[i] = token[i].replaceAll(";", "");
+			token[i] = token[i].replace(";", "");
+			token[i] = token[i].replace(",", "");
+			token[i] = token[i].replace(" ", "");
 			
 		}
 		return token;
@@ -50,32 +52,35 @@ public class PreProcessing {
 		    e.printStackTrace();
 		  }
 		//++++++++++++++++++++++++
-/*		
-	String s="This String Contains the stop words like is am are so this program will remove all of them at your will thanks to you for watching this tutorial";
-	s=s.trim().replaceAll("\\s+", " ");
-	String[] words = s.split(" ");
-*/
-	for (String word : bag) {
-		wordsList.add(word);
-		System.out.println(word);
-	}
 
+	for (String word : bag) {
+		if(word.equals("") || word.equals(" ") || word.equals("\n"))
+			continue;
+		else
+			wordsList.add(word);
+		
+	}
+	
 //remove stop words here from the temp list
 	for (int i = 0; i < wordsList.size(); i++) {
 		// get the item as string
+		
 		for (int j = 0; j < stopWordsList.length; j++) {
-			if (stopWordsList[j].trim().contains(wordsList.get(i))) {
-				wordsList.remove(i);
+		//	if(stopWordsList[j].trim().contains(wordsList.get(i))) {
+			if(i < wordsList.size()){
+				if (stopWordsList[j].trim().equalsIgnoreCase(wordsList.get(i))) {
+					wordsList.remove(i);
+				}
 			}
 		}
-		bag[i] = wordsList.get(i);
-	}
-	
-	for (String str : wordsList) {
-		System.out.print(str+" ");
+		
+		
 	}
 
-		
+	for(int i=0;i<wordsList.size();i++){
+		bag[i] = wordsList.get(i);
+	//	System.out.println(bag[i]);
+	}
 	
 		return bag;
 	}

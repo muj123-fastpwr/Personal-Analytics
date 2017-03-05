@@ -288,7 +288,7 @@ public class Window {
 	public void contentExtractionFromWebPage(String URL){
 		
         try {
-			URL url = new URL("http://www.javatpoint.com/jsoup-example-print-meta-data-of-an-url"); 
+			URL url = new URL("http://page.math.tu-berlin.de/~kant/teaching/hess/krypto-ws2006/des.htm"); 
 			Document doc = Jsoup.parse(url, 5*1000);
 			
 			
@@ -306,15 +306,18 @@ public class Window {
             p=firstParagraph;
             String para="";
             while (p!=lastParagraph){
-            	if(i==5)
-            		break;
                 p=paragraphs.get(i);
                 para += p.text();
-                System.out.println("PARAGRAPH "+i+" : " +p.text());
+              //  System.out.println("PARAGRAPH "+i+" : " +p.text());
                 i++;
                 
             } 
+            String []bagOfWords = null;
+            bagOfWords = pre.clean(para);
+			bagOfWords = pre.removeStopWords(bagOfWords);
+			para = pre.stem(bagOfWords);
             
+			
             Elements heading = doc.select("h1");
             Element firstHeading = heading.first();
             Element lastHeading = heading.last();
@@ -325,12 +328,18 @@ public class Window {
             while (h!=lastHeading){
                 h=heading.get(i);
                 head += h.text();
-                System.out.println("HEADING "+i+" : "+h.text());
+            //    System.out.println("HEADING "+i+" : "+h.text());
                 i++;
                 
             } 
            
             
+            bagOfWords = null;
+            bagOfWords = pre.clean(head);
+			bagOfWords = pre.removeStopWords(bagOfWords);
+			head = pre.stem(bagOfWords);
+            
+			System.out.println(head);
                 
 			String title = doc.title();
 			String content = doc.text();	// full webPage text content
