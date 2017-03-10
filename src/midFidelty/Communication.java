@@ -51,9 +51,11 @@ public class Communication {
 		try {
 			st=cn.createStatement();
 			rs=st.executeQuery(query);
+			// rs.first(); boolean: whether row exists in resultset object
+			// rs.getInt(int columnIndex); 
 			while(rs.next()){
 				if((match1 = compareStrings(rs.getString(2),title)) >= 0.70){
-					winId = Integer.parseInt(rs.getString(1));
+					winId = rs.getInt(1);
 					
 					if(match1 >= match2){
 						match2 = match1;
@@ -79,7 +81,7 @@ public class Communication {
 				st=cn.createStatement();
 				rs=st.executeQuery(query);
 				while(rs.next()){
-					id = Integer.parseInt(rs.getString(1))+1;
+					id = rs.getInt(1)+1;
 				}
 				query = "insert into window values("+id+",'"+title+"',"+0+");"; //auto-increment for pk, fk doesn't work
 				ps = cn.prepareStatement(query);
@@ -115,7 +117,7 @@ public class Communication {
 					try{
 						ps = cn.prepareStatement(query);
 						ps.executeUpdate();
-						System.out.println("new entry executed");
+						
 					}
 					catch (Exception e) {
 						JOptionPane.showMessageDialog(null, "Unable to update time for new day\n"+e);
@@ -125,7 +127,7 @@ public class Communication {
 				
 				else{
 				//	while(rs.next()){
-						oldTime = Integer.parseInt(rs.getString(1));
+						oldTime = rs.getInt(1);
 						
 				//	}
 					query = "update dateAndTime set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";
@@ -164,7 +166,7 @@ public class Communication {
 			}
 			
 		
-		
+		rs.close();
 		time = newTime;
 	}
 	

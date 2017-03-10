@@ -192,22 +192,22 @@ public class Window {
 			
 			if(windowTitle.matches("(.*).pdf(.*)")){
 				String wnd="";
-				System.out.println("before pdf reading");
+			//	System.out.println("before pdf reading");
 				text = contentExtractionFromPdf( wnd =(windowTitle.replace(" - Foxit Reader", "")) );
-				System.out.println("After pdf reading");
+			//	System.out.println("After pdf reading");
 			}
 			
 			else if(windowTitle.matches("(.*).docx(.*)")){
-				
-				text = contentExtractionFromDocx( windowTitle.replace(" - Microsoft Word", "") );
+				String wnd ="";
+				text = contentExtractionFromDocx( wnd = (windowTitle.replace(" - Microsoft Word", "")) );
 			}
 			
 			else if(windowTitle.endsWith(" - Google Chrome") || windowTitle.endsWith(" - Mozilla Firefox")){
 				contentExtractionFromWebPage(windowTitle);
 			}
+		
 			
-			
-	        com.autoUpdate(windowTitle=windowTitle.trim(),time);
+			com.autoUpdate(windowTitle=windowTitle.trim(),time);
 	        
 	        gcalendar1 = null;
 	        System.gc();
@@ -220,20 +220,23 @@ public class Window {
 		String text = "";
 		 try {
 			 	
-			 	File file = new File(fileName);
-				String path = file.getAbsolutePath();
+			 	
+				String path = getFilePath("D:\\1_University",fileName);
 				PDFReader reader = new PDFReader(new File(path));
 				reader.open(); // open the file. 
 				int pages = reader.getNumberOfPages();
-				for(int i=0; i < 1; i++) {
+				for(int i=0; i < pages; i++) {
 				   text =text +" "+ reader.extractTextFromPage(i);
 				  
 				}
 				
 				bagOfWords = pre.clean(text);
 				bagOfWords = pre.removeStopWords(bagOfWords);
+				Analysis anal = new Analysis();
+				System.out.println(fileName);
+				anal.classify(bagOfWords);
 				text = pre.stem(bagOfWords);
-				 System.out.println(text);
+				// System.out.println(text);
 				// perform other operations on pages.
 				reader.close();
 				
@@ -252,10 +255,9 @@ public class Window {
 		String text="";
 		String [] bagOfWords = null;
 		fileName = fileName.trim();
-		System.out.println(fileName);
-		File file = new File(fileName);
-		String path = file.getAbsolutePath();
-		System.out.println(path);
+		
+		
+		String path = getFilePath("D:\\1_University",fileName);
 		 try {
 				XWPFDocument docx = new XWPFDocument(new FileInputStream(path));
 				//using XWPFWordExtractor Class
@@ -264,14 +266,18 @@ public class Window {
 				//System.out.println(we.getText());
 				bagOfWords = pre.clean(text);
 				bagOfWords = pre.removeStopWords(bagOfWords);
+				Analysis anal = new Analysis();
+				System.out.println(fileName);
+				anal.classify(bagOfWords);
 				text = pre.stem(bagOfWords);
 				
 				
-				
+			/*	
 				POIXMLTextExtractor txt = we.getMetadataTextExtractor();
 				System.out.println("IMPORTANT : "+txt.getText());
 				ExtendedProperties cpro = we.getExtendedProperties();
 				System.out.println("MORE IMPORTANT : "+cpro.getApplication());
+				*/
 				we.close();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -358,6 +364,27 @@ public class Window {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public String getFilePath(String rootPath, String filename) {
+		String filePath = null;
+		File root = new File(rootPath);
+		File[] list = root.listFiles();
+		for (File f : list) {
+			
+		    if (f.isDirectory()) {
+		        // store the filePath 
+		        filePath = getFilePath(f.getAbsolutePath(), filename);    
+		    } else if (f.getName().equalsIgnoreCase(filename)) {
+		        filePath = f.getAbsolutePath();
+		     //   System.out.println(filePath);
+		        break;
+		    }
+		  if (filePath != null) {
+		    break;
+		  }
+		}
+		return filePath;
 	}
 	
 }

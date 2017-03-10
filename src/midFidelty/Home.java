@@ -54,7 +54,6 @@ public class Home {
 	private JTextArea activeWindow;
 	
 	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException {
-		
 					
 					Home window = new Home();
 					window.frmPerAnal.setVisible(true);
@@ -65,6 +64,7 @@ public class Home {
 	
 	
 	public Home() throws InterruptedException{
+		
 		initializeFrame();
 		w= new Window();
 		w.openWindows();
@@ -72,7 +72,6 @@ public class Home {
 		initializeMenu();
 		initializePanes();
 		
-	//	w.contentExtractionFromWebPage();
 	}
 	
 	

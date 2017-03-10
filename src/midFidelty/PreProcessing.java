@@ -2,7 +2,9 @@ package midFidelty;
 
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +18,6 @@ public class PreProcessing {
 		String []token = text.split(" ");
 		for(int i=0;i<token.length;i++){
 			token[i]=token[i].trim().replaceAll("\\s+", "");
-			
 			token[i] = token[i].replace(".", "");
 			token[i] = token[i].replace(":", "");
 			token[i] = token[i].replace("(", "");
@@ -26,14 +27,38 @@ public class PreProcessing {
 			token[i] = token[i].replace(";", "");
 			token[i] = token[i].replace(",", "");
 			token[i] = token[i].replace(" ", "");
-			
 		}
 		return token;
 	}
 	
+	public void uniqueWords() throws IOException{
+		ArrayList<String> wordsList = new ArrayList<String>();
+		BufferedReader reader = new BufferedReader(new FileReader("architecture.txt"));
+		String line = "";
+		
+		 while ((line = reader.readLine()) != null)
+		    {
+		      wordsList.add(line);
+		    }
+		    reader.close();
+		    
+		    for (int i = 0; i < wordsList.size() - 1; i++) {
+				// get the item as string
+				System.out.println(wordsList.get(i));
+				for (int j = i+1; j < wordsList.size(); j++) {
+				//	if(stopWordsList[j].trim().contains(wordsList.get(i))) {
+					if( wordsList.get(i).trim().equalsIgnoreCase(wordsList.get(j).trim())){
+							wordsList.remove(j);
+					}
+				}
+		    }
+		    
+		 
+	}
+	
+	
 	public String[] removeStopWords(String [] bag){
 		ArrayList<String> wordsList = new ArrayList<String>();
-		
 		String []stopWordsList = null;
 		try
 		  {
@@ -94,11 +119,55 @@ public class PreProcessing {
 	            //System.out.println(english.getCurrent());
 	            text = text + " " +english.getCurrent();
 	    }
-	    
-	    
-	    
+	   
 	    return text;
 	}
+	
+	
+	 /**
+     * @param doc  list of strings
+     * @param term String represents a term
+     * @return term frequency of term in document
+     */
+    public double tf(List<String> doc, String term) {
+        double result = 0;
+        for (String word : doc) {
+            if (term.equalsIgnoreCase(word))
+                result++;
+        }
+        return result / doc.size();
+    }
+
+    /**
+     * @param docs list of list of strings represents the dataset
+     * @param term String represents a term
+     * @return the inverse term frequency of term in documents
+     */
+    public double idf(List<List<String>> DOCS, String term) {
+        double n = 0;
+        for (List<String> doc : DOCS) {
+            for (String word : doc) {
+                if (term.equalsIgnoreCase(word)) {
+                    n++;
+                    break;
+                }
+            }
+        }
+        return Math.log(DOCS.size() / n);
+    }
+
+    /**
+     * @param doc a text document
+     * @param docs all documents
+     * @param term term
+     * @return the TF-IDF of term
+     */
+    public double tfIdf(List<String> doc, List<List<String>> docs, String term) {
+        return tf(doc, term) * idf(docs, term);
+
+    }
+
+}
 	
 /*	
 	//method to completely stem the words in an array list
@@ -184,7 +253,6 @@ public static ArrayList<String> fileTokenizer(){
 	        List<String> doc1 = Arrays.asList("Lorem", "ipsum", "dolor", "ipsum", "sit", "ipsum");
 	        List<String> doc2 = Arrays.asList("Vituperata", "incorrupte", "at", "ipsum", "pro", "quo");
 	        List<String> doc3 = Arrays.asList("Has", "persius", "disputationi", "id", "simul");
-	        String [] doc4 = {"good", "color","at","time"};
 	        List<List<String>> documents = Arrays.asList(doc1, doc2, doc3);
 
 	        CalculateTFIDF calculator = new CalculateTFIDF();
@@ -198,5 +266,5 @@ public static ArrayList<String> fileTokenizer(){
 	    
 	}
 	
-}
+
 	
