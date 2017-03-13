@@ -6,7 +6,9 @@ import java.sql.SQLException;
 
 import javax.swing.JOptionPane;
 
-
+/*
+ * @author: Mujtaba Ali
+ */
 public class Connector {
 	private Connection cn;
 	

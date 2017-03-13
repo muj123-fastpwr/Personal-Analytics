@@ -40,6 +40,10 @@ import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
+/*
+ * @author: Mujtaba Ali
+ */
+
 public class Window {
 	private String[] apps;
 	private String[] wins;

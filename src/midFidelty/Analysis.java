@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/*
+ * @author: Mujtaba Ali
+ */
 public class Analysis {
 	
 	public void classify(String [] bagOfWords) throws IOException{

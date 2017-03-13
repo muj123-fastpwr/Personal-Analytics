@@ -13,6 +13,9 @@ import java.util.GregorianCalendar;
 
 import javax.swing.JOptionPane;
 
+/*
+ * @author: Mujtaba Ali
+ */
 public class Communication {
 	private Connection cn;
 	private Statement st;
@@ -35,8 +38,17 @@ public class Communication {
 		date = ft.format(date2);
 		
 	}
-
 	
+	public boolean ifNoRow(int id){
+		boolean flag = false;
+		
+		return flag;
+	}
+	
+	public ResultSet getResultSet(int id, String table){
+		String query = "select * from ";
+		return rs;
+	}
 	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
 
 		if(title == "" || title.equals("") || title == null || title.equals(null)){
