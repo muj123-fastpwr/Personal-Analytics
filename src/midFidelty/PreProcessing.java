@@ -31,12 +31,13 @@ public class PreProcessing {
 			token[i] = token[i].replace(",", "");
 			token[i] = token[i].replace(" ", "");
 		}
+		
 		return token;
 	}
 	
 	public void uniqueWords() throws IOException{
 		ArrayList<String> wordsList = new ArrayList<String>();
-		BufferedReader reader = new BufferedReader(new FileReader("architecture.txt"));
+		BufferedReader reader = new BufferedReader(new FileReader("research.txt"));
 		String line = "";
 		
 		 while ((line = reader.readLine()) != null)

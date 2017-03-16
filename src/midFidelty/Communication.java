@@ -39,16 +39,37 @@ public class Communication {
 		
 	}
 	
-	public boolean ifNoRow(int id){
+	public boolean ifNoRow(String title){
 		boolean flag = false;
+		String query = "select * from window where winName = '"+title+"'";
+		try {
+			st=cn.createStatement();
+			rs=st.executeQuery(query);
+			if(!rs.first())
+				flag=true;
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		return flag;
 	}
 	
 	public ResultSet getResultSet(int id, String table){
-		String query = "select * from ";
+		String query = "select * from '"+table+"' where winId = "+id+"";
+		try {
+			st=cn.createStatement();
+			rs=st.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return rs;
 	}
+	
+	public void updateTime(){
+		;
+	}
+	
 	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
 
 		if(title == "" || title.equals("") || title == null || title.equals(null)){
@@ -57,7 +78,6 @@ public class Communication {
 		
 		int oldTime=0,winId=0, id = 0;
 		double match1 = 0.0, match2 = 0.0;
-		//String titleName=null;
 		String query="select winId, winName from window;";
 		boolean titleExists = false;
 		try {
@@ -80,8 +100,9 @@ public class Communication {
 				}
 			}
 			
-		} catch (SQLException e) {
-		 	// TODO Auto-generated catch block
+		}
+		catch (SQLException e) {
+		 	
 			JOptionPane.showMessageDialog(null, "Unable to retrieve from database\n"+e);
 		}
 			
@@ -95,7 +116,7 @@ public class Communication {
 				while(rs.next()){
 					id = rs.getInt(1)+1;
 				}
-				query = "insert into window values("+id+",'"+title+"',"+0+");"; //auto-increment for pk, fk doesn't work
+				query = "insert into window values("+id+",'"+title+"',"+0+");";
 				ps = cn.prepareStatement(query);
 				ps.executeUpdate();
 			}

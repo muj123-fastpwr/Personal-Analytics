@@ -194,16 +194,25 @@ public class Window {
 			time = h1 * 3600 + m1 *60 + s1;
 			
 			
+			
 			if(windowTitle.matches("(.*).pdf(.*)")){
 				String wnd="";
-			//	System.out.println("before pdf reading");
-				text = contentExtractionFromPdf( wnd =(windowTitle.replace(" - Foxit Reader", "")) );
-			//	System.out.println("After pdf reading");
+	///			if(com.ifNoRow(windowTitle)){
+				
+					text = contentExtractionFromPdf( wnd =(windowTitle.replace(" - Foxit Reader", "")) );
+					
+		/*		}
+				else{
+					// Just calculate time: Start time and End time
+				}
+		*/		
 			}
 			
 			else if(windowTitle.matches("(.*).docx(.*)")){
 				String wnd ="";
-				text = contentExtractionFromDocx( wnd = (windowTitle.replace(" - Microsoft Word", "")) );
+		//		if(com.ifNoRow(windowTitle)){
+					text = contentExtractionFromDocx( wnd = (windowTitle.replace(" - Microsoft Word", "")) );
+		//		}
 			}
 			
 			else if(windowTitle.endsWith(" - Google Chrome") || windowTitle.endsWith(" - Mozilla Firefox")){
@@ -298,7 +307,7 @@ public class Window {
 	public void contentExtractionFromWebPage(String URL){
 		
         try {
-			URL url = new URL("http://page.math.tu-berlin.de/~kant/teaching/hess/krypto-ws2006/des.htm"); 
+			URL url = new URL("http://web.hku.hk/~hrnwlck/swresearch/keyterms.htm"); 
 			Document doc = Jsoup.parse(url, 5*1000);
 			
 			
@@ -308,7 +317,7 @@ public class Window {
 			}
 			
 			
-			Elements paragraphs = doc.select("p"); 
+			Elements paragraphs = doc.select("u"); 
 			Element firstParagraph = paragraphs.first();
 			Element lastParagraph = paragraphs.last();
             Element p;
@@ -318,7 +327,7 @@ public class Window {
             while (p!=lastParagraph){
                 p=paragraphs.get(i);
                 para += p.text();
-              //  System.out.println("PARAGRAPH "+i+" : " +p.text());
+                System.out.println(p.text());
                 i++;
                 
             } 

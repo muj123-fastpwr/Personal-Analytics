@@ -14,7 +14,7 @@ public class Analysis {
 	public void classify(String [] bagOfWords) throws IOException{
 		ArrayList<String> research = new ArrayList<String>();
 		ArrayList<String> teaching = new ArrayList<String>();
-		BufferedReader reader1 = new BufferedReader(new FileReader("architecture.txt"));
+		BufferedReader reader1 = new BufferedReader(new FileReader("teaching.txt"));
 		BufferedReader reader2 = new BufferedReader(new FileReader("research.txt"));
 		String line = "";
 		float R=0, T=0;
@@ -48,7 +48,7 @@ public class Analysis {
 		    	}
 		    }
 		    
-		    System.out.println("Research : "+ res/R);
-		    System.out.println("Teaching : "+ teach/T);
+		    System.out.println("Research : "+ (res)/(bagOfWords.length)+"	|	"+R);
+		    System.out.println("Teaching : "+ (teach)/(bagOfWords.length)+"	|	"+T+"\n\n");
 	}
 }
