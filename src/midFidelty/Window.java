@@ -185,7 +185,7 @@ public class Window {
 	       
 	        User32.INSTANCE.GetWindowText(hwnd, buffer, 100);
 	        windowTitle = Native.toString(buffer);
-	        Thread.sleep(5000);
+	        Thread.sleep(1000);
 	        
 	        GregorianCalendar gcalendar1 = new GregorianCalendar();
 			h1 = gcalendar1.get(Calendar.HOUR);

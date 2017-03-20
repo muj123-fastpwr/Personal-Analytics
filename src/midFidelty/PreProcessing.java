@@ -17,7 +17,7 @@ public class PreProcessing {
 	
 	
 	public String[] clean(String text){
-		text = text.replace("\n", "");
+		text = text.replace("\n", " ");
 		String []token = text.split(" ");
 		for(int i=0;i<token.length;i++){
 			token[i]=token[i].trim().replaceAll("\\s+", "");
@@ -26,6 +26,7 @@ public class PreProcessing {
 			token[i] = token[i].replace("(", "");
 			token[i] = token[i].replace(")", "");
 			token[i] = token[i].replace("\"", "");
+			token[i] = token[i].replace("\\", "");
 			token[i] = token[i].replace("/", "");
 			token[i] = token[i].replace(";", "");
 			token[i] = token[i].replace(",", "");
