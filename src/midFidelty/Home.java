@@ -34,6 +34,8 @@ import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+
 import javax.swing.UIManager;
 
 import org.jfree.chart.ChartPanel;
@@ -55,7 +57,7 @@ public class Home {
 	private Window w;
 	private JTextArea activeWindow;
 	
-	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException {
+	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException, IOException {
 					
 					Home window = new Home();
 					window.frmPerAnal.setVisible(true);
@@ -81,9 +83,9 @@ public class Home {
 	
 	private void initializeFrame() {
 		frmPerAnal = new JFrame();
+		frmPerAnal.setResizable(false);
 		frmPerAnal.getContentPane().setBackground(SystemColor.menu);
 		frmPerAnal.setTitle("Personal Analytics");
-		frmPerAnal.setResizable(false);
 		frmPerAnal.setIconImage(Toolkit.getDefaultToolkit().getImage("personal.png"));
 		frmPerAnal.setBounds(100, 100, 750, 500);
 		frmPerAnal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

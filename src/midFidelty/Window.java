@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -26,8 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.apache.poi.POIXMLTextExtractor;
-import org.apache.poi.POIXMLProperties.ExtendedProperties;
+
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.jsoup.Jsoup;
@@ -173,7 +173,7 @@ public class Window {
 	
 	
 	
-	public void focusedWindow(Connection cn) throws InterruptedException, HeadlessException, SQLException{
+	public void focusedWindow(Connection cn) throws InterruptedException, HeadlessException, SQLException, IOException{
 		char[] buffer = new char[200];
 		String windowTitle="";
 		String text = "";
@@ -192,9 +192,15 @@ public class Window {
 			m1 = gcalendar1.get(Calendar.MINUTE);
 			s1 = gcalendar1.get(Calendar.SECOND);
 			time = h1 * 3600 + m1 *60 + s1;
-			
-			
-			
+/*			
+			PreProcessing pre = new PreProcessing();
+			try {
+				pre.intersection();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+*/			
 			if(windowTitle.matches("(.*).pdf(.*)")){
 				String wnd="";
 	///			if(com.ifNoRow(windowTitle)){
@@ -212,6 +218,13 @@ public class Window {
 				String wnd ="";
 		//		if(com.ifNoRow(windowTitle)){
 					text = contentExtractionFromDocx( wnd = (windowTitle.replace(" - Microsoft Word", "")) );
+		//		}
+			}
+			
+			else if(windowTitle.matches("(.*).txt(.*)")){
+				String wnd ="";
+		//		if(com.ifNoRow(windowTitle)){
+					text = contentExtractionFromTxt( wnd = (windowTitle.replace(" - Notepad", "")) );
 		//		}
 			}
 			
@@ -302,12 +315,36 @@ public class Window {
 		 return text;
 	}
 	
-	
+	public String contentExtractionFromTxt(String fileName) throws IOException{
+		String text="";
+		String [] bagOfWords = null;
+		fileName = fileName.trim();
+		
+		
+		String path = getFilePath("D:\\1_University",fileName);
+		BufferedReader reader = new BufferedReader(new FileReader(path));
+		String line = "";
+		 while ((line = reader.readLine()) != null)
+		    {
+		      text +=" "+ line;
+		    }
+		    reader.close();
+				bagOfWords = pre.clean(text);
+				bagOfWords = pre.removeStopWords(bagOfWords);
+				Analysis anal = new Analysis();
+				System.out.println(fileName);
+				anal.classify(bagOfWords);
+				text = pre.stem(bagOfWords);
+				
+				
+			
+		 return text;
+	}
 	
 	public void contentExtractionFromWebPage(String URL){
 		
         try {
-			URL url = new URL("http://web.hku.hk/~hrnwlck/swresearch/keyterms.htm"); 
+			URL url = new URL("http://www.csci.csusb.edu/dick/cs202/glossary.html"); 
 			Document doc = Jsoup.parse(url, 5*1000);
 			
 			
@@ -317,7 +354,7 @@ public class Window {
 			}
 			
 			
-			Elements paragraphs = doc.select("u"); 
+			Elements paragraphs = doc.select("a"); 
 			Element firstParagraph = paragraphs.first();
 			Element lastParagraph = paragraphs.last();
             Element p;

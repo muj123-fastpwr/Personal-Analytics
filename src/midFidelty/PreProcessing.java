@@ -38,7 +38,7 @@ public class PreProcessing {
 	
 	public void uniqueWords() throws IOException{
 		ArrayList<String> wordsList = new ArrayList<String>();
-		BufferedReader reader = new BufferedReader(new FileReader("research.txt"));
+		BufferedReader reader = new BufferedReader(new FileReader("teaching2.txt"));
 		String line = "";
 		
 		 while ((line = reader.readLine()) != null)
@@ -61,6 +61,51 @@ public class PreProcessing {
 		 
 	}
 	
+	
+	public void intersection() throws IOException{
+
+		ArrayList<String> researchList = new ArrayList<String>();
+		ArrayList<String> teachingList = new ArrayList<String>();
+		BufferedReader reader1 = new BufferedReader(new FileReader("research.txt"));
+		BufferedReader reader2 = new BufferedReader(new FileReader("teaching2.txt"));
+		String line = "";
+		
+		 while ((line = reader1.readLine()) != null)
+		    {
+		      researchList.add(line);
+		    }
+		    reader1.close();
+		    
+		    line="";
+		    while ((line = reader2.readLine()) != null)
+		    {
+		      teachingList.add(line);
+		    }
+		    reader2.close();
+		    
+		    
+		    for (int i = 0; i < researchList.size(); i++) {
+				// get the item as string
+				for (int j = i; j < teachingList.size(); j++) {
+				//	if(stopWordsList[j].trim().contains(wordsList.get(i))) {
+					if( researchList.get(i).trim().equalsIgnoreCase(teachingList.get(j).trim())){
+					//		System.out.println(researchList.get(i)+"\t"+teachingList.get(j));
+							researchList.remove(i);
+							teachingList.remove(j);
+							
+					}
+				}
+		    }
+		    
+		    System.out.println("RESEARCH WORDS : "+researchList.size());
+		    for(int i=0;i<researchList.size();i++)
+		    	System.out.println(researchList.get(i));
+		    
+		    System.out.println("\n\nTEACHING WORDS : "+teachingList.size());
+		  //  for(int i=0;i<teachingList.size();i++)
+		  //  	System.out.println(teachingList.get(i));
+		
+	}
 	
 	public String[] removeStopWords(String [] bag){
 		ArrayList<String> wordsList = new ArrayList<String>();

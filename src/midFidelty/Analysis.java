@@ -14,8 +14,8 @@ public class Analysis {
 	public void classify(String [] bagOfWords) throws IOException{
 		ArrayList<String> research = new ArrayList<String>();
 		ArrayList<String> teaching = new ArrayList<String>();
-		BufferedReader reader1 = new BufferedReader(new FileReader("teaching.txt"));
-		BufferedReader reader2 = new BufferedReader(new FileReader("research.txt"));
+		BufferedReader reader1 = new BufferedReader(new FileReader("teach.txt"));
+		BufferedReader reader2 = new BufferedReader(new FileReader("res.txt"));
 		String line = "";
 		float R=0, T=0;
 		 while ((line = reader1.readLine()) != null)
@@ -48,7 +48,25 @@ public class Analysis {
 		    	}
 		    }
 		    
-		    System.out.println("Research : "+ (res)/(bagOfWords.length)+"	|	"+R);
-		    System.out.println("Teaching : "+ (teach)/(bagOfWords.length)+"	|	"+T+"\n\n");
+		    res = res/R;
+		    teach = teach/T;
+		    
+		    if(res > teach){
+		    	if((res-teach)/res > 0.10)
+		    		System.out.println("Classified as Research");
+		    	else
+		    		System.out.println("Classified as Gray");
+		    	
+		    }
+		    
+		    else if(res < teach){
+		    	if((teach-res)/teach > 0.10)
+		    		System.out.println("Classified as Teaching");
+		    	else
+		    		System.out.println("Classified as Gray");
+		    }
+		    
+		    System.out.println("Research : "+ (res)+"	|	"+R);
+		    System.out.println("Teaching : "+ (teach)+"	|	"+T+"\n\n");
 	}
 }
