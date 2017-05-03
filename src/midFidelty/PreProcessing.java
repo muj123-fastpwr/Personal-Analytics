@@ -38,7 +38,7 @@ public class PreProcessing {
 	
 	public void uniqueWords() throws IOException{
 		ArrayList<String> wordsList = new ArrayList<String>();
-		BufferedReader reader = new BufferedReader(new FileReader("teaching2.txt"));
+		BufferedReader reader = new BufferedReader(new FileReader("itc.txt"));
 		String line = "";
 		
 		 while ((line = reader.readLine()) != null)

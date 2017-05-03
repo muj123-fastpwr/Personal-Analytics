@@ -1,5 +1,6 @@
 package midFidelty;
 
+
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -45,7 +46,10 @@ import java.awt.SystemColor;
 import java.awt.Font;
 import java.awt.Canvas;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ActionEvent;
+
 
 /*
  * @author: Mujtaba ali
@@ -56,8 +60,17 @@ public class Home {
 	private static Connection cn;
 	private Window w;
 	private JTextArea activeWindow;
-	
-	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException, IOException {
+	private int width, height;
+	private JTabbedPane tabbedPane, tabbedPane2;
+	private JSplitPane splitPane;
+	private JPanel piePanel, barPanel;
+	private JFreeChart pieChart, barChart;
+	private ChartPanel chPanel;
+	private JButton winRefresh1, winRefresh2;
+	private JLabel lblDate;
+	private JSpinner daySpinner;
+	private JLabel homeLogo;
+	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException, IOException, ClassNotFoundException {
 					
 					Home window = new Home();
 					window.frmPerAnal.setVisible(true);
@@ -68,7 +81,8 @@ public class Home {
 	
 	
 	public Home() throws InterruptedException{
-		
+		width = 759;
+		height = 500;
 		initializeFrame();
 		w= new Window();
 		w.openWindows();
@@ -83,11 +97,28 @@ public class Home {
 	
 	private void initializeFrame() {
 		frmPerAnal = new JFrame();
-		frmPerAnal.setResizable(false);
 		frmPerAnal.getContentPane().setBackground(SystemColor.menu);
 		frmPerAnal.setTitle("Personal Analytics");
 		frmPerAnal.setIconImage(Toolkit.getDefaultToolkit().getImage("personal.png"));
 		frmPerAnal.setBounds(100, 100, 750, 500);
+		frmPerAnal.addComponentListener(new ComponentAdapter(){
+			public void componentResized(ComponentEvent e){
+				width = frmPerAnal.getWidth();
+				height = frmPerAnal.getHeight();
+				tabbedPane.setBounds(10, 20, width-35, height-90);
+				splitPane.setBounds(10, 43, width-55, height-165);
+				tabbedPane2.setBounds(10, 45, width-55, height-165);
+				homeLogo.setBounds((width/2)-(128/2)-10, (height/2)-(128/2)-20, 128, 128);
+				barPanel.setBounds(0, 0, width-120, height-170);
+				piePanel.setBounds(0, 0, width-120, height-170);
+				chPanel.setPreferredSize(new Dimension(width-140, height-185));
+				winRefresh1.setBounds(width-75, 5, 30, 30);
+				winRefresh2.setBounds(width-75, 5, 30, 30);
+				daySpinner.setBounds(width-250, 14, 141, 20);
+				lblDate.setBounds(width-280, 17, 25, 14);
+			}
+	
+		});
 		frmPerAnal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
@@ -171,7 +202,7 @@ public class Home {
 	
 	
 	private void initializePanes(){
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(10, 21, 724, 419);
 		frmPerAnal.getContentPane().add(tabbedPane);
 		
@@ -189,11 +220,14 @@ public class Home {
 		homePanel.setLayout(null);
 		
 		
-		JLabel homeLogo = new JLabel("");
+		homeLogo = new JLabel("");
 		Image img = new ImageIcon(this.getClass().getResource("/personal.png")).getImage();
+		//System.out.println(img.getHeight(homeLogo));
 		homeLogo.setIcon(new ImageIcon(img));
 		homeLogo.setBounds(305, 146, 128, 128);
 		homePanel.add(homeLogo);
+		
+		
 		
 		
 	}
@@ -208,7 +242,7 @@ public class Home {
 		tabbedPane.addTab("Open Windows", null, openWindowPanel, null);
 		openWindowPanel.setLayout(null);
 		
-		JSplitPane splitPane = new JSplitPane();
+		splitPane = new JSplitPane();
 		splitPane.setBounds(10, 43, 699, 335);
 		openWindowPanel.add(splitPane);
 		
@@ -241,14 +275,14 @@ public class Home {
 		
 		
 			
-		JButton winRefresh = new JButton("");
-		winRefresh.addMouseListener(new MouseAdapter() {
+		winRefresh1 = new JButton("");
+		winRefresh1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				winRefresh.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				winRefresh1.setCursor(new Cursor(Cursor.HAND_CURSOR));
 			}
 		});
-		winRefresh.addActionListener(new ActionListener() {
+		winRefresh1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				w.openWindows();
 				w.currentApps(activeWindow, CurrentApps, gbl_CurrentApps);
@@ -256,12 +290,12 @@ public class Home {
 			}
 		});
 		//Current Apps end
-		winRefresh.setBounds(679, 5, 30, 30);
-		openWindowPanel.add(winRefresh);
+		winRefresh1.setBounds(679, 5, 30, 30);
+		openWindowPanel.add(winRefresh1);
 		
 		
 		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
-		winRefresh.setIcon(new ImageIcon(img2));
+		winRefresh1.setIcon(new ImageIcon(img2));
 		
 		JLabel lblCurrentApp = new JLabel("Current Apps");
 		lblCurrentApp.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -289,7 +323,7 @@ public class Home {
 		reportPanel.setLayout(null);
 		
 		
-		JTabbedPane tabbedPane2 = new JTabbedPane(JTabbedPane.LEFT);
+		tabbedPane2 = new JTabbedPane(JTabbedPane.LEFT);
 		tabbedPane2.setBounds(10, 45, 699, 333);
 		reportPanel.add(tabbedPane2);
 		
@@ -301,13 +335,13 @@ public class Home {
 		
 		
 		// ********** Display Chart Start*************
-		JPanel piePanel = new JPanel();
+		piePanel = new JPanel();
 		piePanel.setBounds(0, 0, 632, 328);
 		PieLayeredPane.add(piePanel);
 		
 		ResultView resView = new ResultView();
-		JFreeChart pieChart = resView.generatePieChart();
-		ChartPanel chPanel = new ChartPanel(pieChart);
+		pieChart = resView.generatePieChart();
+		chPanel = new ChartPanel(pieChart);
         chPanel.setPreferredSize(new Dimension(610, 315));
         piePanel.add(chPanel);
         
@@ -318,12 +352,12 @@ public class Home {
 		tabbedPane2.addTab("Bar Chart", null, barLayeredPane, null);
 		tabbedPane2.setBackgroundAt(1, new Color(255, 255, 255));
 		
-		JPanel barPanel = new JPanel();
+		barPanel = new JPanel();
 		barPanel.setBounds(0, 0, 632, 328);
 		barLayeredPane.add(barPanel);
 
 		resView = new ResultView();
-		JFreeChart barChart = resView.generateBarChart();
+		barChart = resView.generateBarChart();
 		chPanel = new ChartPanel(barChart);
         chPanel.setPreferredSize(new Dimension(615, 315));
         barPanel.add(chPanel);
@@ -341,21 +375,20 @@ public class Home {
 		canvas.setBounds(10, 10, 612, 308);
 		layeredPane.add(canvas);
 		
-		JLabel lblDate = new JLabel("Day:");
+		lblDate = new JLabel("Day:");
 		lblDate.setBounds(475, 17, 25, 14);
 		reportPanel.add(lblDate);
 		
-		JSpinner daySpinner = new JSpinner();
+		daySpinner = new JSpinner();
 		daySpinner.setModel(new SpinnerDateModel(new Date(1479092400000L), new Date(1479092400000L), null, Calendar.DAY_OF_YEAR));
 		daySpinner.setBounds(510, 14, 141, 20);
 		reportPanel.add(daySpinner);
 		
-		JButton button = new JButton("");
-		button.setBounds(679, 5, 30, 30);
-		reportPanel.add(button);
+		winRefresh2 = new JButton("");
+		winRefresh2.setBounds(679, 5, 30, 30);
+		reportPanel.add(winRefresh2);
 		
 		Image img2 = new ImageIcon(this.getClass().getResource("/refresh.png")).getImage();
-		button.setIcon(new ImageIcon(img2));
+		winRefresh2.setIcon(new ImageIcon(img2));
 	}
-	
 }

@@ -124,13 +124,13 @@ public class Communication {
 				JOptionPane.showMessageDialog(null, "Unable to insert into Window Table\n"+e);
 			}
 			
-			query = "insert into dateAndTime values("+id+",'"+date+"', "+(newTime-time)+")";
+			query = "insert into date values("+id+",'"+date+"', "+(newTime-time)+")";
 			try{
 				ps = cn.prepareStatement(query);
 				ps.executeUpdate();
 			}
 			catch(Exception e){
-				JOptionPane.showMessageDialog(null, "Unable to insert into dateAndTime Table\n"+e);
+				JOptionPane.showMessageDialog(null, "Unable to insert into date Table\n"+e);
 			}
 			
 			// extract extension
@@ -139,14 +139,14 @@ public class Communication {
 		}
 		
 		else if(titleExists){
-			query = "select time from dateAndTime where winId="+winId+" and date='"+date+"'";
+			query = "select time from date where winId="+winId+" and date='"+date+"'";
 			try{
 				st=cn.createStatement();
 				rs=st.executeQuery(query);
 				
 				if(!rs.next()){
 					
-					query = "insert into dateAndTime values("+winId+",'"+date+"',"+(newTime-time)+")";
+					query = "insert into date values("+winId+",'"+date+"',"+(newTime-time)+")";
 					try{
 						ps = cn.prepareStatement(query);
 						ps.executeUpdate();
@@ -163,7 +163,7 @@ public class Communication {
 						oldTime = rs.getInt(1);
 						
 				//	}
-					query = "update dateAndTime set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";
+					query = "update date set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";
 					try{
 						ps = cn.prepareStatement(query);
 						ps.executeUpdate();
@@ -174,7 +174,7 @@ public class Communication {
 				}
 			}
 			catch(Exception e){
-				JOptionPane.showMessageDialog(null, "Unable to retrieve from dateAndTime\n"+e);
+				JOptionPane.showMessageDialog(null, "Unable to retrieve from date\n"+e);
 			}
 /*			if(oldTime!=0){
 				query = "update dateAndTime set time ="+(newTime-time+oldTime)+" where winId="+winId+" and date='"+date+"'";

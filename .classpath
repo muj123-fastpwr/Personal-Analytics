@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="lib/xmlbeans-2.6.0.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.16-beta1.jar"/>
 	<classpathentry kind="lib" path="lib/snowball-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/lingpipe-4.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
