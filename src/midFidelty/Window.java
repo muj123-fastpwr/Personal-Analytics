@@ -40,6 +40,8 @@ import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
+import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
+
 /*
  * @author: Mujtaba Ali
  */
@@ -49,6 +51,20 @@ public class Window {
 	private String[] wins;
 	private GridBagConstraints gbc_label;
 	private PreProcessing pre = new PreProcessing();
+	private Analysis anal;
+	
+	
+	
+	public Window(Connection cn) throws ClassNotFoundException, IOException{
+		anal = new Analysis();
+		anal.train();
+	}
+	
+	public Window(){
+		apps =null;
+		wins = null;
+	}
+	
 	
 	
 	public void openWindows(){
@@ -175,16 +191,16 @@ public class Window {
 	
 	public void focusedWindow(Connection cn) throws InterruptedException, HeadlessException, SQLException, IOException, ClassNotFoundException{
 		char[] buffer = new char[200];
-		String windowTitle="";
-		String text = "";
+		String newWindowTitle="",oldWindowTitle="";
+		String text = "", type="";
 		int time=0;
 		int h1,m1,s1;
 		Communication com = new Communication(cn);
 		while(true){
 	        HWND hwnd = User32.INSTANCE.GetForegroundWindow();
 	       
-	        User32.INSTANCE.GetWindowText(hwnd, buffer, 100);
-	        windowTitle = Native.toString(buffer);
+	        User32.INSTANCE.GetWindowText(hwnd, buffer, 200);
+	        newWindowTitle = Native.toString(buffer);
 	        Thread.sleep(1000);
 	        
 	        GregorianCalendar gcalendar1 = new GregorianCalendar();
@@ -201,45 +217,91 @@ public class Window {
 				e.printStackTrace();
 			}
 	*/		
-			if(windowTitle.matches("(.*).pdf(.*)")){
-				String wnd="";
-	///			if(com.ifNoRow(windowTitle)){
+			
+			
+			if((compareStrings(newWindowTitle, oldWindowTitle) < 0.7)){
 				
-					text = contentExtractionFromPdf( wnd =(windowTitle.replace(" - Foxit Reader", "")) );
+				if(newWindowTitle.matches("(.*).pdf(.*)")){
+					String wnd="";
+					if(com.ifWindowExists(newWindowTitle)){
+						
+						com.updateData(time);
+						
+					}
 					
-		/*		}
-				else{
-					// Just calculate time: Start time and End time
+					else{
+						type = contentExtractionFromPdf( wnd =(newWindowTitle.replace(" - Foxit Reader", "")) );
+						com.newEntry(newWindowTitle, type, time);
+					}
+				
 				}
-		*/		
+				
+				
+				else if(newWindowTitle.matches("(.*).docx(.*)")){
+					String wnd ="";
+					if(com.ifWindowExists(newWindowTitle)){
+						
+						com.updateData(time);
+					}
+					
+					else{
+						
+					//	type = contentExtractionFromDocx( wnd = (newWindowTitle.replace(" - Microsoft Word", "")) );
+						com.newEntry(newWindowTitle, type, time);
+						
+					}
+				}
+				
+				
+				else if(newWindowTitle.matches("(.*).txt(.*)")){
+					String wnd ="";
+					if(com.ifWindowExists(newWindowTitle)){
+						com.updateData(time);
+					}
+					else{
+					//	type = contentExtractionFromTxt( wnd = (newWindowTitle.replace(" - Notepad", "")) );
+						com.newEntry(newWindowTitle, type, time);
+					
+					}
+				}
+				
+				
+				else if(newWindowTitle.endsWith(" - Google Chrome") || newWindowTitle.endsWith(" - Mozilla Firefox")){
+					if(com.ifWindowExists(newWindowTitle)){
+						com.updateData(time);
+					}
+					else{
+					//	type = contentExtractionFromWebPage(newWindowTitle);
+						com.newEntry(newWindowTitle, type, time);
+					
+					}
+					
+				}
+				
+				else{
+					if(com.ifWindowExists(newWindowTitle)){
+						com.updateData(time);
+					}
+					else{
+						com.newEntry(newWindowTitle, "N", time);
+					}
+				}
+				
+				oldWindowTitle = newWindowTitle;
+				
 			}
 			
-			else if(windowTitle.matches("(.*).docx(.*)")){
-				String wnd ="";
-		//		if(com.ifNoRow(windowTitle)){
-					text = contentExtractionFromDocx( wnd = (windowTitle.replace(" - Microsoft Word", "")) );
-		//		}
-			}
-			
-			else if(windowTitle.matches("(.*).txt(.*)")){
-				String wnd ="";
-		//		if(com.ifNoRow(windowTitle)){
-					text = contentExtractionFromTxt( wnd = (windowTitle.replace(" - Notepad", "")) );
-		//		}
-			}
-			
-			else if(windowTitle.endsWith(" - Google Chrome") || windowTitle.endsWith(" - Mozilla Firefox")){
-				contentExtractionFromWebPage(windowTitle);
-			}
-		
-			
-			com.autoUpdate(windowTitle=windowTitle.trim(),time);
+		//	com.autoUpdate(newWindowTitle=newWindowTitle.trim(),time);
 	        
 	        gcalendar1 = null;
-	      //  System.gc();
+	        System.gc();
 		}
 	}
 	
+	public double compareStrings(String stringA, String stringB) {
+	    JaroWinkler algorithm = new JaroWinkler();
+	    return algorithm.getSimilarity(stringA, stringB);
+	}
 	
 	public String contentExtractionFromPdf(String fileName) throws ClassNotFoundException{
 		String [] bagOfWords = null;
@@ -256,8 +318,8 @@ public class Window {
 				  
 				}
 				
-				Analysis anal = new Analysis();
-				anal.classify2(text);
+				
+				text = anal.classify2(text);
 			/*	
 				bagOfWords = pre.clean(text);
 				bagOfWords = pre.removeStopWords(bagOfWords);
@@ -293,7 +355,7 @@ public class Window {
 				//System.out.println(we.getText());
 				bagOfWords = pre.clean(text);
 				bagOfWords = pre.removeStopWords(bagOfWords);
-				Analysis anal = new Analysis();
+				
 				System.out.println(fileName);
 				anal.classify(bagOfWords);
 				text = pre.stem(bagOfWords);
@@ -332,7 +394,7 @@ public class Window {
 		    reader.close();
 				bagOfWords = pre.clean(text);
 				bagOfWords = pre.removeStopWords(bagOfWords);
-				Analysis anal = new Analysis();
+				
 				System.out.println(fileName);
 				anal.classify(bagOfWords);
 				text = pre.stem(bagOfWords);
@@ -342,8 +404,8 @@ public class Window {
 		 return text;
 	}
 	
-	public void contentExtractionFromWebPage(String URL){
-		
+	public String contentExtractionFromWebPage(String URL){
+		String type = "";
         try {
 			URL url = new URL("https://en.wikipedia.org/wiki/MD5"); 
 			Document doc = Jsoup.parse(url, 5*1000);
@@ -372,7 +434,7 @@ public class Window {
             String []bagOfWords = null;
             bagOfWords = pre.clean(para);
 			bagOfWords = pre.removeStopWords(bagOfWords);
-			Analysis anal = new Analysis();
+		
 			anal.classify(bagOfWords);
 		//	para = pre.stem(bagOfWords);
             
@@ -417,7 +479,8 @@ public class Window {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+        
+        return type;
 	}
 	
 	public String getFilePath(String rootPath, String filename) {

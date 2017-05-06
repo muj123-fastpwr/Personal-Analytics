@@ -36,9 +36,45 @@ public class Analysis {
 	private static int NGRAM_SIZE = 6;
 	
 	
-	public void classify2(String txt) throws IOException, ClassNotFoundException{
+	private JointClassifierEvaluator<CharSequence> evaluator;
+	private  Classification classification;
+	private JointClassification jc;
+	private JointClassifier<CharSequence> compiledClassifier;
+	
+	
+	
+	
+	public String classify2(String txt){
+		String bestCategory="";
+		String details="";
+		for(int i = 0; i < CATEGORIES.length; ++i) {
+	       classification = new Classification(CATEGORIES[i]);
+	        Classified<CharSequence> classified
+	            = new Classified<CharSequence>(txt,classification);
+	        evaluator.handle(classified);
+	        JointClassification jc =
+	            compiledClassifier.classify(txt);
+	        bestCategory = jc.bestCategory();
+	        details = jc.toString();
+	        System.out.println("Got best category of: " + bestCategory);
+	        System.out.println(details);
+	        System.out.println("---------------");
+	    
+	    }
+	    
+		ConfusionMatrix confMatrix = evaluator.confusionMatrix();
+		System.out.println("Total Accuracy: " + confMatrix.totalAccuracy());
 		
-		DynamicLMClassifier<NGramProcessLM> classifier
+
+		
+	    return (String.valueOf(bestCategory.charAt(0))).toUpperCase();
+	}
+	
+	
+	
+	public void train() throws IOException, ClassNotFoundException{
+		
+        DynamicLMClassifier<NGramProcessLM> classifier
         = DynamicLMClassifier.createNGramProcess(CATEGORIES,NGRAM_SIZE);
 
     for(int i=0; i<CATEGORIES.length; ++i) {
@@ -56,7 +92,7 @@ public class Analysis {
             File file = new File(classDir,trainingFiles[j]);
             String text = Files.readFromFile(file,"ISO-8859-1");
             System.out.println("Training on " + CATEGORIES[i] + "/" + trainingFiles[j]);
-            Classification classification
+            classification
                 = new Classification(CATEGORIES[i]);
             Classified<CharSequence> classified
                 = new Classified<CharSequence>(text,classification);
@@ -69,69 +105,22 @@ public class Analysis {
     JointClassifier<CharSequence> compiledClassifier
         = (JointClassifier<CharSequence>)
         AbstractExternalizable.compile(classifier);
-
+    this.compiledClassifier = compiledClassifier;
     boolean storeCategories = true;
-    JointClassifierEvaluator<CharSequence> evaluator
-        = new JointClassifierEvaluator<CharSequence>(compiledClassifier,
+    evaluator
+        = new JointClassifierEvaluator<CharSequence>(this.compiledClassifier,
                                                      CATEGORIES,
                                                      storeCategories);
-    for(int i = 0; i < CATEGORIES.length; ++i) {
-        File classDir = new File(TESTING_DIR,CATEGORIES[i]);
-        String[] testingFiles = classDir.list();
-        
-        
-    /*    
-        for (int j=0; j<testingFiles.length;  ++j) {
-            String text
-                = Files
-                .readFromFile(new File(classDir,testingFiles[j]),"ISO-8859-1");
-            System.out.print("Testing on " + CATEGORIES[i] + "/" + testingFiles[j] + " ");
-            
-            Classification classification
-            = new Classification(CATEGORIES[i]);
-        Classified<CharSequence> classified
-            = new Classified<CharSequence>(text,classification);
-        evaluator.handle(classified);
-        
-        JointClassification jc =
-            compiledClassifier.classify(text);
-        String bestCategory = jc.bestCategory();
-        String details = jc.toString();
-        System.out.println("Got best category of: " + bestCategory);
-        System.out.println(jc.toString());
-        System.out.println("---------------");
-    }
-    */
-        Classification classification
-        = new Classification(CATEGORIES[i]);
-    Classified<CharSequence> classified
-        = new Classified<CharSequence>(txt,classification);
-    evaluator.handle(classified);
     
-    JointClassification jc =
-        compiledClassifier.classify(txt);
     
-    String bestCategory = jc.bestCategory();
-    String details = jc.toString();
-    System.out.println("Got best category of: " + bestCategory);
-    System.out.println(jc.toString());
-    System.out.println("---------------");
-        
-}
     
-    ConfusionMatrix confMatrix = evaluator.confusionMatrix();
-    System.out.println("Total Accuracy: " + confMatrix.totalAccuracy());
+    
 // ConfusionMatrix confMatrix = evaluator.confusionMatrix();
 // System.out.println("Total Accuracy: " + confMatrix.totalAccuracy());
 
 //  System.out.println("\nFULL EVAL");
 //  System.out.println(evaluator);
-
-
-           
-
-		
-	}
+}
 	
 	
 	

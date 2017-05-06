@@ -22,6 +22,7 @@ public class Communication {
 	private ResultSet rs;
 	private PreparedStatement ps;
 	private int time;
+	private int winId, oldWinId=1;
 	private String date;
 	
 	public Communication(Connection cn){
@@ -35,6 +36,7 @@ public class Communication {
 		
 		Date date2 = new Date();
 		SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+		System.out.println();
 		date = ft.format(date2);
 		
 	}
@@ -66,9 +68,202 @@ public class Communication {
 		return rs;
 	}
 	
-	public void updateTime(){
-		;
+	
+	public ResultSet getTimeInterval(String type){
+		String query = "SELECT startTime,endTime from window natural join date natural join time where date='"+date+"' and type= '"+type+"'";
+		try {
+			st=cn.createStatement();
+			rs=st.executeQuery(query);
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
 	}
+	
+	public void newEntry(String title, String type, int startTime) throws SQLException{
+		String query = "select max(timeId) from time;";
+		int tid=0;
+		try{
+		st=cn.createStatement();
+		rs=st.executeQuery(query);
+		while(rs.next()){
+			tid = rs.getInt(1);
+		}
+
+		}catch(Exception e){
+			JOptionPane.showMessageDialog(null, "Unable to update endTime \n"+e);
+		}
+		
+		
+		if(tid!=0){
+			query="update time set endTime="+startTime+" where winId="+oldWinId+" and timeId="+tid+";";
+			try{
+				ps = cn.prepareStatement(query);
+				ps.executeUpdate();
+			}
+			catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Unable to update endTime \n"+e);
+			}
+			
+		}
+
+		query = "select max(winId) from window;";
+		try{
+			
+			st=cn.createStatement();
+			rs=st.executeQuery(query);
+			while(rs.next()){
+				winId = rs.getInt(1)+1;
+			}
+			query = "insert into window values("+winId+",'"+title+"','"+type+"');";
+			ps = cn.prepareStatement(query);
+			ps.executeUpdate();
+		}
+		catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Unable to insert into Window Table\n"+e);
+		}
+		
+		query = "insert into date values("+winId+",'"+date+"', "+0+")";
+		try{
+			ps = cn.prepareStatement(query);
+			ps.executeUpdate();
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(null, "Unable to insert into date Table\n"+e);
+		}
+		
+
+		query = "insert into time(startTime, endTime, winId, date) values("+startTime+","+0+","+winId+",'"+date+"');";
+		try{
+			ps = cn.prepareStatement(query);
+			ps.executeUpdate();
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(null, "Unable to insert into time Table\n"+e);
+		}
+		oldWinId = winId;
+		rs.close();
+	}
+	
+	
+	public void updateData(int startTime) throws SQLException{
+		String query = "select max(timeId) from time;";
+		int tid=0;
+		try{
+		st=cn.createStatement();
+		rs=st.executeQuery(query);
+		if(rs.first()){
+			tid = rs.getInt(1);
+		}
+
+		}catch(Exception e){
+			JOptionPane.showMessageDialog(null, "Unable to update endTime \n"+e);
+		}
+		
+		query="update time set endTime="+startTime+" where winId="+oldWinId+" and timeId="+tid+";";
+		try{
+			ps = cn.prepareStatement(query);
+			ps.executeUpdate();
+		}
+		catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Unable to update endTime \n"+e);
+		}
+		
+		
+		
+		query = "select date from date where winId="+winId+" and date='"+date+"'";
+		try{
+			st=cn.createStatement();
+			rs=st.executeQuery(query);
+			
+			if(!rs.first()){
+				
+				query = "insert into date values("+winId+",'"+date+"',"+0+")";
+				try{
+					ps = cn.prepareStatement(query);
+					ps.executeUpdate();
+					
+				}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Unable to update date for new day\n"+e);
+				}
+				
+				
+				query = "insert into time(startTime,endTime,winId,date) values("+startTime+","+0+","+winId+",'"+date+"');";
+				try{
+					ps = cn.prepareStatement(query);
+					ps.executeUpdate();
+					
+				}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Unable to insert time for new day\n"+e);
+				}
+				
+			}
+			
+			else{
+			
+				query = "insert into time(startTime,endTime,winId,date) values("+startTime+","+0+","+winId+",'"+date+"')";
+				try{
+					ps = cn.prepareStatement(query);
+					ps.executeUpdate();
+				}
+				catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Unable to insert into time \n"+e);
+				}
+			}
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(null, "Unable to retrieve from date\n"+e);
+		}			
+	
+		oldWinId = winId;
+		rs.close();
+	}
+	
+	
+	
+	public boolean ifWindowExists(String title){
+		int id=0;
+		double match1 = 0.0, match2 = 0.0;
+		boolean titleExists = false;
+		
+		String query="select winId, winName from window;";
+		
+		try {
+			st=cn.createStatement();
+			rs=st.executeQuery(query);
+			// rs.first(); boolean: whether row exists in resultset object
+			// rs.getInt(int columnIndex); 
+			while(rs.next()){
+				if((match1 = compareStrings(rs.getString(2),title)) >= 0.70){
+					winId = rs.getInt(1);
+					
+					if(match1 >= match2){
+						match2 = match1;
+						id = winId;
+					}
+					else{
+						winId = id;
+					}
+					titleExists = true;
+				}
+			}
+			
+		}
+		catch (SQLException e) {
+		 	
+			JOptionPane.showMessageDialog(null, "Error in ifWindowExists \n"+e);
+		}
+		
+		
+		
+		
+		return titleExists;
+	}
+	
+	
 	
 	public void autoUpdate(String title,int newTime) throws HeadlessException, SQLException{
 

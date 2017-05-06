@@ -63,30 +63,37 @@ public class Home {
 	private int width, height;
 	private JTabbedPane tabbedPane, tabbedPane2;
 	private JSplitPane splitPane;
-	private JPanel piePanel, barPanel;
-	private JFreeChart pieChart, barChart;
-	private ChartPanel chPanel;
+	private JPanel piePanel, barPanel, ganttPanel;
+	private JFreeChart pieChart, barChart,ganttChart;
+	private ChartPanel chGanttPanel, chPiePanel, chBarPanel;
 	private JButton winRefresh1, winRefresh2;
 	private JLabel lblDate;
 	private JSpinner daySpinner;
 	private JLabel homeLogo;
+	private JLabel lblActiveWindow;
+	
+	
 	public static void main(String[] args) throws InterruptedException, HeadlessException, SQLException, IOException, ClassNotFoundException {
 					
 					Home window = new Home();
 					window.frmPerAnal.setVisible(true);
-					Window w = new Window();
+					
+					
+					
+					Window w = new Window(cn);
 					w.focusedWindow(cn);
 				
 	}
 	
 	
-	public Home() throws InterruptedException{
+	public Home() throws InterruptedException, ClassNotFoundException, IOException, HeadlessException, SQLException{
 		width = 759;
 		height = 500;
 		initializeFrame();
 		w= new Window();
 		w.openWindows();
 		cn = connectDB();
+		//w.focusedWindow(cn);
 		initializeMenu();
 		initializePanes();
 		
@@ -109,13 +116,21 @@ public class Home {
 				splitPane.setBounds(10, 43, width-55, height-165);
 				tabbedPane2.setBounds(10, 45, width-55, height-165);
 				homeLogo.setBounds((width/2)-(128/2)-10, (height/2)-(128/2)-20, 128, 128);
-				barPanel.setBounds(0, 0, width-120, height-170);
+				
+				
 				piePanel.setBounds(0, 0, width-120, height-170);
-				chPanel.setPreferredSize(new Dimension(width-140, height-185));
+				chPiePanel.setPreferredSize(new Dimension(width-170, height-185));
+				ganttPanel.setBounds(0, 0, width-120, height-170);
+				chBarPanel.setPreferredSize(new Dimension(width-160, height-185));
+				barPanel.setBounds(0, 0, width-120, height-170);
+				chGanttPanel.setPreferredSize(new Dimension(width-160, height-185));
+				
+				
 				winRefresh1.setBounds(width-75, 5, 30, 30);
 				winRefresh2.setBounds(width-75, 5, 30, 30);
 				daySpinner.setBounds(width-250, 14, 141, 20);
 				lblDate.setBounds(width-280, 17, 25, 14);
+				lblActiveWindow.setBounds(width/2, 18, 105, 14);
 			}
 	
 		});
@@ -251,7 +266,7 @@ public class Home {
 		
 		activeWindow = new JTextArea();
 		activeWindow.setEditable(false);
-		activeWindow.setBackground(new Color(255, 255, 204));
+		activeWindow.setBackground(new Color(230, 230, 250));
 		activeWindow.setForeground(Color.BLACK);
 		Font myFont = new Font("Calibre", Font.BOLD, 15);
 		activeWindow.setFont(myFont);
@@ -260,7 +275,7 @@ public class Home {
 		
 		JPanel CurrentApps = new JPanel();
 		CurrentApps.setBorder(UIManager.getBorder("CheckBox.border"));
-		CurrentApps.setBackground(new Color(255, 255, 204));
+		CurrentApps.setBackground(new Color(230, 230, 250));
 		splitPane.setLeftComponent(CurrentApps);
 		GridBagLayout gbl_CurrentApps = new GridBagLayout();
 		gbl_CurrentApps.columnWidths = new int[]{89, 0};
@@ -302,7 +317,7 @@ public class Home {
 		lblCurrentApp.setBounds(10, 18, 90, 14);
 		openWindowPanel.add(lblCurrentApp);
 		
-		JLabel lblActiveWindow = new JLabel("Active Window");
+		lblActiveWindow = new JLabel("Active Window");
 		lblActiveWindow.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblActiveWindow.setBounds(328, 18, 105, 14);
 		openWindowPanel.add(lblActiveWindow);
@@ -327,24 +342,29 @@ public class Home {
 		tabbedPane2.setBounds(10, 45, 699, 333);
 		reportPanel.add(tabbedPane2);
 		
+		
+		
+		
+		// ********** Display Chart Start*************
+		ResultView resView = new ResultView();
+
+
+        
 		JLayeredPane PieLayeredPane = new JLayeredPane();
 		PieLayeredPane.setBackground(new Color(255, 255, 204));
 		tabbedPane2.addTab("Pie Chart", null, PieLayeredPane, null);
 		PieLayeredPane.setLayout(null);
 		tabbedPane2.setBackgroundAt(0, new Color(255, 255, 255));
 		
-		
-		// ********** Display Chart Start*************
 		piePanel = new JPanel();
 		piePanel.setBounds(0, 0, 632, 328);
 		PieLayeredPane.add(piePanel);
 		
-		ResultView resView = new ResultView();
 		pieChart = resView.generatePieChart();
-		chPanel = new ChartPanel(pieChart);
-        chPanel.setPreferredSize(new Dimension(610, 315));
-        piePanel.add(chPanel);
-        
+		chPiePanel = new ChartPanel(pieChart);
+        chPiePanel.setPreferredSize(new Dimension(610, 315));
+        piePanel.add(chPiePanel);
+		
 		
 		JLayeredPane barLayeredPane = new JLayeredPane();
 		barLayeredPane.setBackground(new Color(255, 255, 204));
@@ -356,25 +376,44 @@ public class Home {
 		barPanel.setBounds(0, 0, 632, 328);
 		barLayeredPane.add(barPanel);
 
-		resView = new ResultView();
+		//resView = new ResultView();
 		barChart = resView.generateBarChart();
-		chPanel = new ChartPanel(barChart);
-        chPanel.setPreferredSize(new Dimension(615, 315));
-        barPanel.add(chPanel);
+		chBarPanel = new ChartPanel(barChart);
+        chBarPanel.setPreferredSize(new Dimension(615, 315));
+        barPanel.add(chBarPanel);
 		
+        
+        JLayeredPane ganttLayeredPane = new JLayeredPane();
+		ganttLayeredPane.setBackground(new Color(255, 255, 204));
+		tabbedPane2.addTab("Gantt Chart", null, ganttLayeredPane, null);
+		tabbedPane2.setBackgroundAt(2, new Color(255, 255, 255));
+		ganttLayeredPane.setLayout(null);
+		
+		
+        ganttPanel = new JPanel();
+        ganttPanel.setBounds(0, 0, 632, 328);
+        ganttLayeredPane.add(ganttPanel);
+        
+        ganttChart = resView.generateGanttChart();
+        chGanttPanel = new ChartPanel(ganttChart);
+        chGanttPanel.setPreferredSize(new Dimension(615, 315));
+        ganttPanel.add(chGanttPanel);
+        
+        
+        
+        
 		//************ Display Chart End *****************
             
 		
-		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setBackground(new Color(255, 255, 204));
-		tabbedPane2.addTab("Other", null, layeredPane, null);
-		tabbedPane2.setBackgroundAt(2, new Color(255, 255, 255));
-		layeredPane.setLayout(null);
 		
+		
+		
+	/*	
 		Canvas canvas = new Canvas();
+		canvas.setBackground(new Color(230, 230, 250));
 		canvas.setBounds(10, 10, 612, 308);
-		layeredPane.add(canvas);
-		
+		ganttLayeredPane.add(canvas);
+		*/
 		lblDate = new JLabel("Day:");
 		lblDate.setBounds(475, 17, 25, 14);
 		reportPanel.add(lblDate);
