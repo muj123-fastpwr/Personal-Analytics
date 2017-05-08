@@ -47,8 +47,8 @@ public class Analysis {
 	public String classify2(String txt){
 		String bestCategory="";
 		String details="";
-		for(int i = 0; i < CATEGORIES.length; ++i) {
-	       classification = new Classification(CATEGORIES[i]);
+		//for(int i = 0; i < CATEGORIES.length; ++i) {
+	       //classification = new Classification(CATEGORIES[i]);
 	        Classified<CharSequence> classified
 	            = new Classified<CharSequence>(txt,classification);
 	        evaluator.handle(classified);
@@ -60,7 +60,7 @@ public class Analysis {
 	        System.out.println(details);
 	        System.out.println("---------------");
 	    
-	    }
+	   // }
 	    
 		ConfusionMatrix confMatrix = evaluator.confusionMatrix();
 		System.out.println("Total Accuracy: " + confMatrix.totalAccuracy());

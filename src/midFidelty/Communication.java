@@ -82,6 +82,12 @@ public class Communication {
 	}
 	
 	public void newEntry(String title, String type, int startTime) throws SQLException{
+		
+		if(title == "" || title.equals("") || title == null || title.equals(null)){
+			return;
+		}
+		
+		
 		String query = "select max(timeId) from time;";
 		int tid=0;
 		try{
